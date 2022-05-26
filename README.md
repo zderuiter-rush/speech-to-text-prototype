@@ -1,1 +1,1 @@
-# speech-to-text-prototype
+# Speech To Text Prototype for The Rush Market
