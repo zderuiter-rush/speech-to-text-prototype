@@ -1,0 +1,20 @@
+.speechtextcontainer {
+    border: 5px double black;
+    display: inline-block;
+    justify-content: left;
+    align-items: center;
+    margin: 0 calc(5vw - 10px);
+    padding: 3px;
+    width: 90vw;
+
+    .speechtext {
+        display: inline-block;
+        width: calc(90vw - 70px);
+    }
+
+    .speechbutton {
+        cursor: pointer;
+        display: inline-block;
+        margin: 0 2vh;
+    }
+}

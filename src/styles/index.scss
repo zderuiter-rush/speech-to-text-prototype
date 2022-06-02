@@ -1,0 +1,10 @@
+:root {
+    --text-color: beige;
+    --background-color: rgb(52, 52, 52);
+}
+
+body {
+    margin: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}

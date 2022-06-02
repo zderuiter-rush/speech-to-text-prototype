@@ -1,0 +1,47 @@
+.home {
+    // border: 1px solid;
+    width: 90vw;
+    margin: 20px calc(5vw - 4px);
+    // margin: 20px 9vh;
+    display: flex;
+    
+    .dimensions {
+        border: 5px solid black;
+        width: calc(40vh - 20px);
+
+        .lform, .wform, .hform {
+            border: 1px solid black;
+            padding: 3px;
+            margin: 5px;
+            display: flex;
+            justify-content: left;
+
+            div {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            .result {
+                justify-content: right;
+                width: 100px;
+            }
+        }
+    }
+    .damages {
+        padding: 5px;
+        width: 100%;
+        border: 5px solid black;
+        border-left: 0px;
+        display: flex;
+        justify-self: right;
+
+        label {
+            margin-right: 5px;
+        }
+        
+        .damagedetails {
+            width: 100%;
+        }
+    }
+}
