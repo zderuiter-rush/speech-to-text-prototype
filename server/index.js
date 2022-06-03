@@ -46,8 +46,4 @@ app.get("/api/get-speech-token", async (req, res, next) => {
   }
 });
 
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(publicPath, "index.html"));
-// });
-
 app.listen(port, () => console.log("Express server is running!"));
