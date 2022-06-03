@@ -11,19 +11,14 @@
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.27.2",
-    "body-parser": "^1.20.0",
     "bootstrap": "^5.1.3",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "express-favicon": "^2.0.1",
-    "express-pino-logger": "^7.0.0",
+    "http-proxy-middleware": "^2.0.6",
     "microsoft-cognitiveservices-speech-sdk": "^1.21.1",
-    "node-env-run": "^4.0.2",
-    "nodemon": "^2.0.16",
-    "npm-run-all": "^4.1.5",
     "nth-check": "^2.1.1",
     "path": "^0.12.7",
-    "pino-colada": "^2.2.2",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-router-dom": "^6.3.0",
@@ -33,12 +28,12 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "node buildServer.js",
-    "react-start": "react-scripts start",
+    "start": "node server/buildServer.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "node-env-run server --exec nodemon | pino-colada",
+    "server": "node-env-run server/devServer.js --exec nodemon | pino-colada",
+    "react-start": "react-scripts start",
     "dev": "run-p server react-start"
   },
   "eslintConfig": {
@@ -58,5 +53,15 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "body-parser": "^1.20.0",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "express-pino-logger": "^7.0.0",
+    "node-env-run": "^4.0.2",
+    "nodemon": "^2.0.16",
+    "npm-run-all": "^4.1.5",
+    "pino-colada": "^2.2.2"
   }
 }

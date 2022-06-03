@@ -1,18 +1,22 @@
 require("dotenv").config();
+const { createProxyMiddleware } = require("http-proxy-middleware");
 const express = require("express");
 const favicon = require("express-favicon");
 const axios = require("axios");
-// const bodyParser = require("body-parser");
-// const pino = require("express-pino-logger")();
-const path = require("path");
+const bodyParser = require("body-parser");
+const pino = require("express-pino-logger")();
 const port = process.env.PORT || 3001;
 const app = express();
 
-app.use(favicon(__dirname + "/build/favicon.ico"));
-// app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(pino);
-app.use(express.static(__dirname));
-app.use(express.static(path.join(__dirname, "build")));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(pino);
+app.use(
+  "/api/get-speech-token",
+  createProxyMiddleware({
+    target: "http://localhost:3001",
+    changeOrigin: true,
+  })
+);
 
 app.get("/api/get-speech-token", async (req, res, next) => {
   res.setHeader("Content-Type", "application/json");
@@ -45,10 +49,6 @@ app.get("/api/get-speech-token", async (req, res, next) => {
       res.status(401).send("There was an error authorizing your speech key.");
     }
   }
-});
-
-app.get("/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 app.listen(port, () => console.log("Express server is running!"));
