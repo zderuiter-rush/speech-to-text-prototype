@@ -2,18 +2,15 @@ require("dotenv").config();
 const express = require("express");
 const favicon = require("express-favicon");
 const axios = require("axios");
-const bodyParser = require("body-parser");
-const pino = require("express-pino-logger")();
+// const bodyParser = require("body-parser");
+// const pino = require("express-pino-logger")();
 const path = require("path");
 const port = process.env.PORT || 3001;
-
 const app = express();
 
-// const publicPath = path.join(__dirname, "..", "public");
-
 app.use(favicon(__dirname + "/build/favicon.ico"));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(pino);
+// app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(pino);
 app.use(express.static(__dirname));
 app.use(express.static(path.join(__dirname, "build")));
 

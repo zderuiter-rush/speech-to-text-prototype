@@ -45,7 +45,6 @@ root.add("height", function (e) {
 
 root.add("add damage", function (e) {
   var recognizedSpeech = getRecognizedSpeech();
-  console.log(recognizedSpeech);
   if (recognizedSpeech.toLowerCase().includes("end of damage")) {
     let end = recognizedSpeech.indexOf("end of damage");
     $(".damagedetails").value += recognizedSpeech.substring(0, end);
