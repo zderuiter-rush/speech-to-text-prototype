@@ -1,5 +1,4 @@
 require("dotenv").config();
-const { createProxyMiddleware } = require("http-proxy-middleware");
 const express = require("express");
 const favicon = require("express-favicon");
 const axios = require("axios");
@@ -10,13 +9,6 @@ const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(pino);
-app.use(
-  "/api/get-speech-token",
-  createProxyMiddleware({
-    target: "http://localhost:3001",
-    changeOrigin: true,
-  })
-);
 
 app.get("/api/get-speech-token", async (req, res, next) => {
   res.setHeader("Content-Type", "application/json");
