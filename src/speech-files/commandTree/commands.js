@@ -1,5 +1,5 @@
 import HashTableNode from "./commandTree";
-import { getRecognizedSpeech } from "../STT";
+// import { getRecognizedSpeech } from "../STT";
 
 // HTML handling setup
 const $ = (s, o = document) => o.querySelector(s);
@@ -18,6 +18,7 @@ root.add("length", function (e) {
   if (number.test(e)) {
     let res = number.exec(e);
     $(".length.input").value = $(".length.result").innerHTML = res[0];
+    console.log(res);
     return false;
   }
   return true;
@@ -28,6 +29,7 @@ root.add("depth", function (e) {
   if (number.test(e)) {
     let res = number.exec(e);
     $(".width.input").value = $(".width.result").innerHTML = res[0];
+    console.log(res);
     return false;
   }
   return true;
@@ -38,23 +40,33 @@ root.add("height", function (e) {
   if (number.test(e)) {
     let res = number.exec(e);
     $(".height.input").value = $(".height.result").innerHTML = res[0];
+    console.log(res);
     return false;
   }
   return true;
 });
 
-root.add("add damage", function (e) {
-  var recognizedSpeech = getRecognizedSpeech();
-  if (recognizedSpeech.toLowerCase().includes("end of damage")) {
-    let end = recognizedSpeech.indexOf("end of damage");
-    $(".damagedetails").value += recognizedSpeech.substring(0, end);
+root.add("add damage", addDamage);
+root.add("added damage", addDamage);
+function addDamage(e) {
+  $(".damagedetails").value += e + " ";
+
+  if ($(".damagedetails").value.toLowerCase().includes("end of damage")) {
+    $(".damagedetails").value = $(".damagedetails").value.replace(
+      /\.?\s?(E|e)nd of damage\.?\s?/g,
+      "."
+    );
     return false;
   }
-  if (recognizedSpeech.toLowerCase().includes("add damage")) {
-    recognizedSpeech = recognizedSpeech.replace(/(A|a)dd damage\.?\s?/g, "");
-    $(".damagedetails").value += recognizedSpeech;
-    return true;
+  if (
+    $(".damagedetails").value.toLowerCase().includes("add damage") ||
+    $(".damagedetails").value.toLowerCase().includes("added damage")
+  ) {
+    $(".damagedetails").value = $(".damagedetails").value.replace(
+      /(A|a)dd(ed)? damage\.?\s?/g,
+      ""
+    );
   }
-  $(".damagedetails").value += recognizedSpeech + " ";
+
   return true;
-});
+}

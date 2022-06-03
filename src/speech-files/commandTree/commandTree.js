@@ -49,24 +49,36 @@ export default function HashTableNode() {
 
   this.doCommand = function (cmd, key) {
     command = cmd;
-    if (command === null || key === "") {
+    let keys = key.split(" ");
+
+    if (!keepCommand || key === "") {
+      console.log(key + " end");
+      if (keys.length > 1) {
+        command = this.getCommand(this.formatKey(keys.join(" ")));
+        if (command !== null) {
+          keepCommand = command(keys[0]);
+        }
+        this.doCommand(command, keys.slice(1).join(" "));
+      }
       return;
     }
 
-    let keys = key.split(" ");
     if (keepCommand) {
       keepCommand = startCommand = command(keys[0]);
-      if (!keepCommand) {
-        if (keys.length > 1) {
-          keys = keys.slice(1);
-          command = this.getCommand(keys.join(" "));
-          keepCommand = startCommand = command(keys[0]);
-          this.doCommand(command, keys.slice(1).join(" "));
-        }
-      } else {
-        this.doCommand(command, keys.slice(1).join(" "));
-      }
     }
+    console.log("keyslicejoin: " + keys.slice(1).join(" "));
+    this.doCommand(command, keys.slice(1).join(" "));
+    // if (!keepCommand) {
+    //   this.doCommand(command, keys.slice(1).join(" "));
+    //   //   keys = keys.slice(1);
+    //   //   command = this.getCommand(keys.join(" "));
+    //   //   if (keys.length > 1) {
+    //   //     keepCommand = startCommand = command(keys[0]);
+    //   //     this.doCommand(command, keys.slice(1).join(" "));
+    //   //   }
+    //   // } else {
+    //   //   this.doCommand(command, keys.slice(1).join(" "));
+    // }
   };
 
   this.getContent = function () {
@@ -75,5 +87,11 @@ export default function HashTableNode() {
 
   this.setKeepCommand = function (keep) {
     keepCommand = keep;
+  };
+
+  this.formatKey = function (key) {
+    var noPunctuation = key.replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "");
+    var finalNoPunc = noPunctuation.replace(/\s{2,}/g, " ");
+    return finalNoPunc.toLowerCase();
   };
 }

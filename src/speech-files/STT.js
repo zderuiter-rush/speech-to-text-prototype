@@ -38,15 +38,13 @@ var speech = {
       $(".speechtext").innerHTML = "Please speak louder or more clearly...";
     } else {
       $(".speechtext").innerHTML = recognizedSpeech = e.result.text;
-      var noPunctuation = e.result.text.replace(
-        /[.,/#!$%^&*;:{}=\-_`~()]/g,
-        ""
-      );
-      var finalNoPunc = noPunctuation.replace(/\s{2,}/g, " ");
-      var keys = finalNoPunc.split();
 
-      command = root.getCommand(finalNoPunc.toLowerCase());
-      root.setKeepCommand(command(keys[0]));
+      var keys = e.result.text.split(" ");
+
+      command = root.getCommand(root.formatKey(e.result.text));
+      if (command !== null) {
+        root.setKeepCommand(command(keys[0]));
+      }
       root.doCommand(command, keys.slice(1).join(" "));
     }
   },
