@@ -28,7 +28,7 @@ root.add("depth", function (e) {
   let number = /[0-9]+(\.[0-9]+)?/;
   if (number.test(e)) {
     let res = number.exec(e);
-    $(".width.input").value = $(".width.result").innerHTML = res[0];
+    $(".depth.input").value = $(".depth.result").innerHTML = res[0];
     console.log(res);
     return false;
   }

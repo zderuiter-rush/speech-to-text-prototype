@@ -15,10 +15,10 @@ export default class Home extends Component {
           </form>
           <form className="form wform">
             <div>
-              <label htmlFor="width">Width: </label>
-              <input className="width input" type="text"></input>
+              <label htmlFor="depth">Depth: </label>
+              <input className="depth input" type="text"></input>
             </div>
-            <div className="width result"></div>
+            <div className="depth result"></div>
           </form>
           <form className="form hform">
             <div>
