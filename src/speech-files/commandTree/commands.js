@@ -23,7 +23,7 @@ root.add("length", function (e) {
   return true;
 });
 
-root.add("width", function (e) {
+root.add("depth", function (e) {
   let number = /[0-9]+(\.[0-9]+)?/;
   if (number.test(e)) {
     let res = number.exec(e);

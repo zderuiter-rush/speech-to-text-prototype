@@ -28,11 +28,11 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "node servers/buildServer.js",
+    "start": "node buildServer.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "node-env-run servers/devServer.js --exec nodemon | pino-colada",
+    "server": "node-env-run devServer.js --exec nodemon | pino-colada",
     "react-start": "react-scripts start",
     "dev": "run-p server react-start"
   },
