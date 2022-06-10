@@ -61,12 +61,14 @@ const speech = {
   stop: () => {
     speech.recognizer.stopContinuousRecognitionAsync();
   },
-  synthesize: (text) => {
+  synthesize: (text, stop = false) => {
     speech.synthesizer.speakTextAsync(
       text,
       (result) => {
         if (result) {
-          speech.synthesizer.close();
+          if (stop) {
+            speech.synthesizer.close();
+          }
           return result.audioData;
         }
       },
@@ -81,6 +83,7 @@ const speech = {
 export async function sttFromMic() {
   startSTT = !startSTT;
   if (!startSTT) {
+    speech.synthesize("Speech to text has ended.", true);
     speech.stop();
     return;
   }
