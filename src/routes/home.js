@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { Link } from "react-router-dom";
 import "../styles/home.scss";
 
 export default class Home extends Component {
@@ -31,6 +32,11 @@ export default class Home extends Component {
         <div className="damages">
           <label htmlFor="damagedetails">Damages:</label>
           <textarea className="damagedetails"></textarea>
+        </div>
+        <div>
+          <Link className="nextpage" to="/1">
+            Next Page
+          </Link>
         </div>
       </div>
     );

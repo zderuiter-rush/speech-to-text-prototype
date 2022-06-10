@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./routes/navbar";
 import SpeechText from "./routes/speechtext";
 import Home from "./routes/home";
+import Page1 from "./routes/page1";
 
 import "./styles/App.scss";
 
@@ -13,8 +14,8 @@ export const App = () => {
       <SpeechText />
       <Routes>
         <Route exact path="/" element={<Home />} />
-        <Route exact path="/1" element={<Home />} />
-        <Route exact path="/2" element={<Home />} />
+        <Route exact path="/1" element={<Page1 />} />
+        <Route exact path="/2" element={<Page1 />} />
       </Routes>
     </div>
   );

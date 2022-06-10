@@ -1,0 +1,19 @@
+.stuff1container {
+    margin: 20px calc(5vw - 4px);
+
+    .prevpage {
+        position: absolute;
+        bottom: 20px;
+        left: calc(5vw - 4px);
+        background-color: black;
+        padding: 10px;
+        border-radius: 10px;
+        color: beige;
+        text-decoration: none;
+        transition: all 3 ease;
+        &:hover {
+            background-color:beige;
+            color: black;
+        }
+    }
+}

@@ -13,19 +13,26 @@ var startSTT = false;
 var command = null;
 var recognizedSpeech = "";
 
-var speech = {
+const speech = {
   speechConfig: null,
-  audioConfig: null,
+  audioInConfig: null,
+  audioOutConfig: null,
   recognizer: null,
+  synthesizer: null,
   initialize: (authToken, region) => {
     speech.speechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(
       authToken,
       region
     );
-    speech.audioConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
+    speech.audioInConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
+    speech.audioOutConfig = speechsdk.AudioConfig.fromDefaultSpeakerOutput();
     speech.recognizer = new speechsdk.SpeechRecognizer(
       speech.speechConfig,
-      speech.audioConfig
+      speech.audioInConfig
+    );
+    speech.synthesizer = new speechsdk.SpeechSynthesizer(
+      speech.speechConfig,
+      speech.audioOutConfig
     );
   },
   start: () => {
@@ -54,6 +61,21 @@ var speech = {
   stop: () => {
     speech.recognizer.stopContinuousRecognitionAsync();
   },
+  synthesize: (text) => {
+    speech.synthesizer.speakTextAsync(
+      text,
+      (result) => {
+        if (result) {
+          speech.synthesizer.close();
+          return result.audioData;
+        }
+      },
+      (error) => {
+        console.log(error);
+        speech.synthesizer.close();
+      }
+    );
+  },
 };
 
 export async function sttFromMic() {
@@ -67,6 +89,8 @@ export async function sttFromMic() {
 
   speech.initialize(tokenObj.authToken, tokenObj.region);
   speech.start();
+
+  speech.synthesize("Speech to text has begun.");
 }
 
 export function getRecognizedSpeech() {

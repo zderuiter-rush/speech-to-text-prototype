@@ -4,6 +4,12 @@ export default function HashTableNode() {
   var keepCommand = false;
   var startCommand = false;
 
+  this.addGroup = function (root, keys, funcValue) {
+    keys.forEach(function (key) {
+      root.add(key, funcValue);
+    });
+  };
+
   this.add = function (key, funcValue) {
     let keys = key.split(" ");
     if (keys.length > 1) {
@@ -52,7 +58,6 @@ export default function HashTableNode() {
     let keys = key.split(" ");
 
     if (!keepCommand || key === "") {
-      console.log(key + " end");
       if (keys.length > 1) {
         command = this.getCommand(this.formatKey(keys.join(" ")));
         if (command !== null) {
@@ -66,19 +71,7 @@ export default function HashTableNode() {
     if (keepCommand) {
       keepCommand = startCommand = command(keys[0]);
     }
-    console.log("keyslicejoin: " + keys.slice(1).join(" "));
     this.doCommand(command, keys.slice(1).join(" "));
-    // if (!keepCommand) {
-    //   this.doCommand(command, keys.slice(1).join(" "));
-    //   //   keys = keys.slice(1);
-    //   //   command = this.getCommand(keys.join(" "));
-    //   //   if (keys.length > 1) {
-    //   //     keepCommand = startCommand = command(keys[0]);
-    //   //     this.doCommand(command, keys.slice(1).join(" "));
-    //   //   }
-    //   // } else {
-    //   //   this.doCommand(command, keys.slice(1).join(" "));
-    // }
   };
 
   this.getContent = function () {

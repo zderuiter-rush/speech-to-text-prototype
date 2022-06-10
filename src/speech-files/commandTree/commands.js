@@ -1,8 +1,20 @@
 import HashTableNode from "./commandTree";
-// import { getRecognizedSpeech } from "../STT";
 
 // HTML handling setup
 const $ = (s, o = document) => o.querySelector(s);
+
+/**
+ * List of all command groups
+ */
+// Dimensions
+const length = ["length", "long"];
+const depth = ["depth", "width", "wide"];
+const height = ["height", "high"];
+// Damages
+const damage = ["add damage", "added damage"];
+// navigate pages
+const nextPage = ["next page"];
+const prevPage = ["last page", "previous page"];
 
 /**
  * List of all commands with their respective functions
@@ -13,7 +25,7 @@ const $ = (s, o = document) => o.querySelector(s);
  */
 export const root = new HashTableNode();
 
-root.add("length", function (e) {
+root.addGroup(root, length, function (e) {
   let number = /[0-9]+(\.[0-9]+)?/;
   if (number.test(e)) {
     let res = number.exec(e);
@@ -24,7 +36,7 @@ root.add("length", function (e) {
   return true;
 });
 
-root.add("depth", function (e) {
+root.addGroup(root, depth, function (e) {
   let number = /[0-9]+(\.[0-9]+)?/;
   if (number.test(e)) {
     let res = number.exec(e);
@@ -35,7 +47,7 @@ root.add("depth", function (e) {
   return true;
 });
 
-root.add("height", function (e) {
+root.addGroup(root, height, function (e) {
   let number = /[0-9]+(\.[0-9]+)?/;
   if (number.test(e)) {
     let res = number.exec(e);
@@ -46,9 +58,7 @@ root.add("height", function (e) {
   return true;
 });
 
-root.add("add damage", addDamage);
-root.add("added damage", addDamage);
-function addDamage(e) {
+root.addGroup(root, damage, function (e) {
   $(".damagedetails").value += e + " ";
 
   if ($(".damagedetails").value.toLowerCase().includes("end of damage")) {
@@ -69,4 +79,12 @@ function addDamage(e) {
   }
 
   return true;
-}
+});
+
+root.addGroup(root, nextPage, function (e) {
+  $(".nextpage").click();
+});
+
+root.addGroup(root, prevPage, function (e) {
+  $(".prevpage").click();
+});

@@ -1,12 +1,10 @@
-import React from "react";
+import { Component } from "react";
 import { sttFromMic } from "../speech-files/STT";
 import "../styles/speechtext.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMicrophoneLines } from "@fortawesome/free-solid-svg-icons";
 
-export default class SpeechText extends React.Component {
-  async componentDidMount() {}
-
+export default class SpeechText extends Component {
   render() {
     return (
       <div className="speechtextcontainer">
