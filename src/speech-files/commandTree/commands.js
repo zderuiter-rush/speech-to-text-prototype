@@ -30,7 +30,6 @@ root.addGroup(root, length, function (e) {
   if (number.test(e)) {
     let res = number.exec(e);
     $(".length.input").value = $(".length.result").innerHTML = res[0];
-    console.log(res);
     return false;
   }
   return true;
@@ -41,7 +40,6 @@ root.addGroup(root, depth, function (e) {
   if (number.test(e)) {
     let res = number.exec(e);
     $(".depth.input").value = $(".depth.result").innerHTML = res[0];
-    console.log(res);
     return false;
   }
   return true;
@@ -52,7 +50,6 @@ root.addGroup(root, height, function (e) {
   if (number.test(e)) {
     let res = number.exec(e);
     $(".height.input").value = $(".height.result").innerHTML = res[0];
-    console.log(res);
     return false;
   }
   return true;
@@ -88,3 +85,14 @@ root.addGroup(root, nextPage, function (e) {
 root.addGroup(root, prevPage, function (e) {
   $(".prevpage").click();
 });
+
+root.addGroup(
+  root,
+  ["do a barrel roll", "roll out", "do a flip"],
+  async function (e) {
+    $("body").style.overflow = "hidden";
+    $("body").style.transition = "transform 3.5s";
+    $("body").style.transformOrigin = "50% 50%";
+    $("body").style.transform = "rotate(360deg)";
+  }
+);
