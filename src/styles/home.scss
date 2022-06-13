@@ -44,7 +44,7 @@
     }
 
     .nextpage {
-        position: absolute;
+        position: fixed;
         bottom: 20px;
         right: calc(5vw - 4px);
         background-color: black;

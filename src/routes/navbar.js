@@ -14,12 +14,17 @@ export default class Navbar extends Component {
           <ul>
             <li>
               <Link className="link" to="/1">
-                stuff1
+                Step 1
               </Link>
             </li>
             <li>
               <Link className="link" to="/2">
-                stuff2
+                Step 2
+              </Link>
+            </li>
+            <li>
+              <Link className="link" to="/3">
+                Step 3
               </Link>
             </li>
           </ul>

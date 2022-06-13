@@ -16,16 +16,16 @@ header {
             fill: beige;
         }
     }
-    .logocontainer:hover + .nav, .nav:hover {
-        opacity: 100;
-        transform: scaleX(100%);
-    }
+    // .logocontainer:hover + .nav, .nav:hover {
+    //     opacity: 100;
+    //     transform: scaleX(100%);
+    // }
     .nav {
         font-weight: 500;
         font-size: 30px;
         transform-origin: 0% 0%;
-        opacity: 0;
-        transform: scaleX(0%);
+        // opacity: 0;
+        // transform: scaleX(0%);
         list-style: none;
         padding-left: 10px;
         transition: opacity 1.5s ease, transform 1s ease;

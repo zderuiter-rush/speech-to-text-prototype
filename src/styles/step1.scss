@@ -1,0 +1,46 @@
+.step1_cont {
+    width: 90vw;
+    margin: 20px calc(5vw - 4px);
+    display: flex;
+
+    .suppliercodes {
+        color: black;
+        width: 200px;
+    }
+
+    .prevpage {
+        position: fixed;
+        bottom: 20px;
+        left: calc(5vw - 4px);
+        background-color: black;
+        padding: 10px;
+        border-radius: 10px;
+        color: beige;
+        text-decoration: none;
+        transition: all 3 ease;
+        &:hover {
+            background-color:beige;
+            color: black;
+        }
+    }
+
+    .nextpage {
+        position: fixed;
+        bottom: 20px;
+        right: calc(5vw - 4px);
+        background-color: black;
+        padding: 10px;
+        border-radius: 10px;
+        color: beige;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        &:hover {
+            background-color:beige;
+            color: black;
+        }
+    }
+}
+
+.select2, .select2-container {
+    color: black;
+}
