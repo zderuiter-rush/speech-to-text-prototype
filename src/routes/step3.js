@@ -79,7 +79,6 @@ export default class Step3 extends Component {
                 <label className="box_height label">20</label> in.
               </td>
             </tr>
-            <br />
 
             <tr>
               <td>
@@ -278,7 +277,7 @@ export default class Step3 extends Component {
                 </div>
               </td>
             </tr>
-            <br />
+
             <tr>
               <td>
                 <div className="add_dmg_img">
@@ -287,7 +286,6 @@ export default class Step3 extends Component {
                 </div>
               </td>
             </tr>
-            <br />
 
             <tr>
               <td>

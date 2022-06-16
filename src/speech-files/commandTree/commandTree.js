@@ -1,8 +1,9 @@
 export default function HashTableNode() {
-  var content = {};
   var command = null;
+  var commandText = null;
   var keepCommand = false;
   var startCommand = false;
+  this.content = {};
 
   this.addGroup = function (root, keys, funcValue) {
     keys.forEach(function (key) {
@@ -13,44 +14,54 @@ export default function HashTableNode() {
   this.add = function (key, funcValue) {
     let keys = key.split(" ");
     if (keys.length > 1) {
-      if (!content.hasOwnProperty(keys[0])) {
-        content[keys[0]] = {};
-        content[keys[0]][0] = new HashTableNode();
+      if (!this.content.hasOwnProperty(keys[0])) {
+        this.content[keys[0]] = {};
+        this.content[keys[0]]["next"] = new HashTableNode();
       }
-      content[keys[0]][0].add(keys.slice(1).join(" "), funcValue);
+      this.content[keys[0]]["next"].add(keys.slice(1).join(" "), funcValue);
     } else {
-      content[keys[0]] = {};
-      content[keys[0]][1] = funcValue;
+      this.content[keys[0]] = {};
+      this.content[keys[0]]["cmd"] = funcValue;
     }
   };
 
-  this.getCommand = function (key) {
+  this.getCommand = function (key, txt) {
     let keys = key.split(" ");
     if (!keepCommand) {
       if (keys.length > 1) {
-        if (content[keys[0]] === undefined) {
-          return this.getCommand(keys.slice(1).join(" "));
+        if (this.content[keys[0]] === undefined) {
+          return this.getCommand(keys.slice(1).join(" "), txt);
         } else if (
-          content[keys[0]][0] !== undefined &&
-          content[keys[0]][0].getContent()[keys[1]] !== undefined
+          this.content[keys[0]]["next"] !== undefined &&
+          this.content[keys[0]]["next"].getContent()[keys[1]] !== undefined
         ) {
-          return content[keys[0]][0].getCommand(keys.slice(1).join(" "));
+          return this.content[keys[0]]["next"].getCommand(
+            keys.slice(1).join(" "),
+            txt + keys[0] + " "
+          );
         } else {
           startCommand = true;
         }
       }
       if (startCommand || keys.length === 1) {
         if (
-          content[keys[0]] === undefined &&
-          content[keys[0]][1] === undefined
+          this.content[keys[0]] === undefined &&
+          this.content[keys[0]]["cmd"] === undefined
         ) {
           return null;
         }
-        return content[keys[0]][1];
+        commandText = txt + keys[0];
+        return {
+          cmd: this.content[keys[0]]["cmd"],
+          txt: commandText,
+        };
       }
       return null;
     }
-    return command;
+    return {
+      cmd: command,
+      txt: "",
+    };
   };
 
   this.doCommand = function (cmd, key) {
@@ -75,7 +86,7 @@ export default function HashTableNode() {
   };
 
   this.getContent = function () {
-    return content;
+    return this.content;
   };
 
   this.setKeepCommand = function (keep) {
@@ -83,7 +94,7 @@ export default function HashTableNode() {
   };
 
   this.formatKey = function (key) {
-    var noPunctuation = key.replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "");
+    var noPunctuation = key.replace(/[.,/#!$%^&*?;:{}=\-_`~()]/g, "");
     var finalNoPunc = noPunctuation.replace(/\s{2,}/g, " ");
     return finalNoPunc.toLowerCase();
   };

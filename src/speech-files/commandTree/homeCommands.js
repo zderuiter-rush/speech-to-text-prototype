@@ -1,6 +1,5 @@
 import HashTableNode from "./commandTree";
 
-// HTML handling setup
 const $ = (s, o = document) => o.querySelector(s);
 
 /**
@@ -13,10 +12,11 @@ const height = ["height", "high"];
 // Damages
 const addDamage = ["add damage", "added damage", "add note", "added note"];
 const endDamage = [
-  "end damage",
+  "end note",
   "end of damage",
   "ended damage",
   "add of damage",
+  "and of damage",
 ];
 // navigate pages
 const nextPage = ["next page"];
@@ -62,27 +62,20 @@ root.addGroup(root, height, function (e) {
 });
 
 root.addGroup(root, addDamage, function (e) {
+  let continueDamage = true;
   $(".damagedetails").value += e + " ";
 
-  addDamage.forEach(function (cmd) {
+  endDamage.forEach(function (cmd) {
     if ($(".damagedetails").value.toLowerCase().includes(cmd)) {
-      $(".damagedetails").value = $(".damagedetails").value.replace(
-        /(A|a)dd(ed)? (damage)|(note)\.?\s?/g,
-        ""
+      $(".damagedetails").value = $(".damagedetails").value.substring(
+        0,
+        $(".damagedetails").value.toLowerCase().indexOf(cmd)
       );
+      continueDamage = false;
     }
   });
 
-  return endDamage.forEach(function (cmd) {
-    if ($(".damagedetails").value.toLowerCase().includes(cmd)) {
-      $(".damagedetails").value = $(".damagedetails").value.replace(
-        /\.?\s?(E|e)nd(ed)?( of)? damage\.?\s?/g,
-        "."
-      );
-      return false;
-    }
-    return true;
-  });
+  return continueDamage;
 });
 
 root.addGroup(root, nextPage, function (e) {

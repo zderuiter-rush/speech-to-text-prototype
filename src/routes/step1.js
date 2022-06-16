@@ -1,5 +1,7 @@
 import { Component } from "react";
 import { Link } from "react-router-dom";
+import { commandTree, startPage } from "../speech-files/STT";
+import { root } from "../speech-files/commandTree/step1Commands";
 import "../styles/step1.scss";
 import $ from "jquery";
 import "select2";
@@ -7,11 +9,13 @@ import "select2/dist/css/select2.css";
 
 export default class Step1 extends Component {
   componentDidMount() {
+    commandTree.root = root;
     $(function () {
       $(".suppliercodes").select2({
         placeholder: "Select Supplier Code",
       });
     });
+    startPage();
   }
 
   render() {

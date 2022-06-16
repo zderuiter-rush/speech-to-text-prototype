@@ -1,7 +1,32 @@
 .step2_cont {
+    border: 3px solid black;
     width: 90vw;
+    height: 65vh;
     margin: 20px calc(5vw - 4px);
+    overflow-y: auto;
     display: flex;
+
+    .correct_dims {
+        display: none;
+
+        .cd {
+            width: 50px;
+            height: 20px;
+            background-color: black;
+            border-radius: 5px;
+        }
+    }
+
+    .add_dmg_img {
+        border: 1px dashed beige;
+        width: 100px;
+        height: 75px;
+    }
+
+    .add_notes {
+        width: 100%;
+        height: 250px
+    }
 
     .prevpage {
         position: fixed;

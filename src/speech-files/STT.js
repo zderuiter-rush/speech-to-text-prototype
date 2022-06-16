@@ -1,24 +1,66 @@
 import { getTokenOrRefresh } from "./token_util";
 import { ResultReason } from "microsoft-cognitiveservices-speech-sdk";
-import { root } from "./commandTree/commands";
+import { startVerification } from "./commandTree/step2Commands";
 
 const speechsdk = require("microsoft-cognitiveservices-speech-sdk");
-
-// HTML handling setup
+const { wordsToNumbers } = require("words-to-numbers");
 const $ = (s, o = document) => o.querySelector(s);
+const baseURL = "http://localhost:3000/";
 
 // Speech to text setup
 var startSTT = false;
-// var keepCommand = false;
-var command = null;
-var recognizedSpeech = "";
 
-const speech = {
+export const commandTree = {
+  command: null,
+  commandText: null,
+  root: null,
+  reset: () => {
+    commandTree.command = null;
+    commandTree.commandText = null;
+    commandTree.root.setKeepCommand(false);
+  },
+  handleRecognizedSpeech: (key) => {
+    commandTree.command = commandTree.root.getCommand(
+      commandTree.root.formatKey(key),
+      ""
+    );
+
+    let keys = null;
+    if (commandTree.command["txt"] !== "") {
+      let cmdContent = key.substring(
+        key.toLowerCase().indexOf(commandTree.command["txt"]) +
+          commandTree.command["txt"].length +
+          1
+      );
+      keys = cmdContent.split(" ");
+    } else {
+      keys = key.split(" ");
+    }
+
+    for (let i = 0; i < keys.length; i++) {
+      let num = wordsToNumbers(keys[i], { impliedHundreds: true });
+      if (/[0-9]*(.[0-9]*)?/.test(num)) {
+        keys[i] = num.toString();
+      }
+    }
+
+    if (commandTree.command[0] !== null) {
+      commandTree.root.setKeepCommand(commandTree.command["cmd"](keys[0]));
+    }
+    commandTree.root.doCommand(
+      commandTree.command["cmd"],
+      keys.slice(1).join(" ")
+    );
+  },
+};
+
+export const speech = {
   speechConfig: null,
   audioInConfig: null,
   audioOutConfig: null,
   recognizer: null,
   synthesizer: null,
+  player: null,
   initialize: (authToken, region) => {
     speech.speechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(
       authToken,
@@ -34,6 +76,7 @@ const speech = {
       speech.speechConfig,
       speech.audioOutConfig
     );
+    speech.player = new speechsdk.SpeakerAudioDestination();
   },
   start: () => {
     speech.recognizer.recognized = speech.recognized;
@@ -44,15 +87,8 @@ const speech = {
     if (e.result.reason === ResultReason.NoMatch) {
       $(".speechtext").innerHTML = "Please speak louder or more clearly...";
     } else {
-      $(".speechtext").innerHTML = recognizedSpeech = e.result.text;
-
-      var keys = e.result.text.split(" ");
-
-      command = root.getCommand(root.formatKey(e.result.text));
-      if (command !== null) {
-        root.setKeepCommand(command(keys[0]));
-      }
-      root.doCommand(command, keys.slice(1).join(" "));
+      $(".speechtext").innerHTML = e.result.text;
+      commandTree.handleRecognizedSpeech(e.result.text);
     }
   },
   recognizing: (s, e) => {
@@ -61,13 +97,14 @@ const speech = {
   stop: () => {
     speech.recognizer.stopContinuousRecognitionAsync();
   },
-  synthesize: (text, stop = false) => {
-    speech.synthesizer.speakTextAsync(
-      text,
+  synthesize: (text, rate = 1.5, close = false) => {
+    speech.synthesizer.speakSsmlAsync(
+      speech.createSsml(text, rate),
       (result) => {
         if (result) {
-          if (stop) {
+          if (close) {
             speech.synthesizer.close();
+            speech.synthesizer = null;
           }
           return result.audioData;
         }
@@ -78,12 +115,22 @@ const speech = {
       }
     );
   },
+  createSsml: (text, rate = 1.5) => {
+    return `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US">
+        <voice name="en-US-JennyNeural">
+          <prosody rate="${rate}">
+              ${text}
+          </prosody>
+        </voice>
+      </speak>`;
+  },
 };
 
 export async function sttFromMic() {
   startSTT = !startSTT;
   if (!startSTT) {
-    speech.synthesize("Speech to text has ended.", true);
+    speech.synthesize("Speech to text has ended.", 1.5, false);
+    commandTree.reset();
     speech.stop();
     return;
   }
@@ -93,9 +140,26 @@ export async function sttFromMic() {
   speech.initialize(tokenObj.authToken, tokenObj.region);
   speech.start();
 
-  speech.synthesize("Speech to text has begun.");
+  startPage();
 }
 
-export function getRecognizedSpeech() {
-  return recognizedSpeech;
+export async function startPage() {
+  if (startSTT) {
+    const route = window.location.href.replace(baseURL, "");
+    switch (route) {
+      case "1":
+        speech.synthesize("Recieve Products Page.");
+        break;
+      case "2":
+        speech.synthesize("Verification Page.");
+        startVerification();
+        break;
+      case "3":
+        speech.synthesize("Product Inspection Page.");
+        break;
+      default:
+        speech.synthesize("Speech to text has begun.");
+        break;
+    }
+  }
 }

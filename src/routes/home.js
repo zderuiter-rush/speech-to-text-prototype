@@ -1,8 +1,15 @@
 import { Component } from "react";
 import { Link } from "react-router-dom";
+import { commandTree, startPage } from "../speech-files/STT";
+import { root } from "../speech-files/commandTree/homeCommands";
 import "../styles/home.scss";
 
 export default class Home extends Component {
+  componentDidMount() {
+    commandTree.root = root;
+    startPage();
+  }
+
   render() {
     return (
       <div className="home">
