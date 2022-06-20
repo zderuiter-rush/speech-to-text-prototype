@@ -1,0 +1,23 @@
+.commandList_cont {
+    border: 3px solid black;
+    width: 90vw;
+    height: 65vh;
+    margin: 20px calc(5vw - 4px);
+    overflow-y: auto;
+    display: flex;
+
+    .commands {
+        position: relative;
+        transition: all 1s ease;
+        overflow: hidden;
+        max-height: 0;
+    }
+
+    .expand {
+        max-height: 500px;
+    }
+
+    .title {
+        cursor: pointer;
+    }
+}

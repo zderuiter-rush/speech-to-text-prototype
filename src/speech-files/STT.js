@@ -6,7 +6,8 @@ import { startInspection } from "./commandTree/step3Commands";
 const speechsdk = require("microsoft-cognitiveservices-speech-sdk");
 const { wordsToNumbers } = require("words-to-numbers");
 const $ = (s, o = document) => o.querySelector(s);
-const baseURL = "https://sheltered-plateau-09726.herokuapp.com/";
+const baseURL = "http://localhost:3000/";
+// const baseURL = "https://sheltered-plateau-09726.herokuapp.com/";
 
 // Speech to text setup
 var startSTT = false;
@@ -18,7 +19,9 @@ export const commandTree = {
   reset: () => {
     commandTree.command = null;
     commandTree.commandText = null;
-    commandTree.root.setKeepCommand(false);
+    if (commandTree.root !== null) {
+      commandTree.root.setKeepCommand(false);
+    }
   },
   handleRecognizedSpeech: (key) => {
     commandTree.command = commandTree.root.getCommand(
@@ -78,10 +81,11 @@ export const speech = {
       speech.audioOutConfig
     );
   },
-  start: () => {
+  start: async () => {
     speech.recognizer.recognized = speech.recognized;
     speech.recognizer.recognizing = speech.recognizing;
     speech.recognizer.startContinuousRecognitionAsync();
+    $(".speechtext").innerHTML = "Start talking and it will appear here!";
   },
   recognized: (s, e) => {
     if (e.result.reason === ResultReason.NoMatch) {
@@ -96,6 +100,7 @@ export const speech = {
   },
   stop: () => {
     speech.recognizer.stopContinuousRecognitionAsync();
+    speech.recognizer.close();
   },
   synthesize: (text, rate = 1.5, close = false) => {
     speech.synthesizer.speakSsmlAsync(
@@ -143,7 +148,7 @@ export async function sttFromMic() {
   startPage();
 }
 
-export async function startPage() {
+export function startPage() {
   if (startSTT) {
     speech.synthesize("You are now on");
     const route = window.location.href.replace(baseURL, "");
@@ -158,6 +163,9 @@ export async function startPage() {
       case "3":
         speech.synthesize("Product Inspection Page.");
         startInspection();
+        break;
+      case "command-list":
+        speech.synthesize("Command List Page");
         break;
       default:
         speech.synthesize("Home Page.");

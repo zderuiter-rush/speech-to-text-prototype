@@ -155,12 +155,7 @@ export default class Step3 extends Component {
                 <input type="hidden" className="condChoice" />
                 <input type="radio" className="cond new" name="prod_cond" />
                 <label htmlFor="pc_correct">New</label>
-                <input
-                  type="radio"
-                  className="cond lnew"
-                  name="prod_cond"
-                  defaultChecked
-                />
+                <input type="radio" className="cond lnew" name="prod_cond" />
                 <label htmlFor="pc_incorrect">Like New</label>
                 <input type="radio" className="cond dmg" name="prod_cond" />
                 <label htmlFor="pc_incorrect">
@@ -178,12 +173,7 @@ export default class Step3 extends Component {
             </tr>
             <tr className="damaged">
               <td>
-                <input
-                  type="radio"
-                  className="no_miss"
-                  name="prod_miss"
-                  defaultChecked
-                />
+                <input type="radio" className="no_miss" name="prod_miss" />
                 <label htmlFor="pc_correct">No</label>
                 <input type="radio" className="some_miss" name="prod_miss" />
                 <label htmlFor="pc_incorrect">Some/Few</label>

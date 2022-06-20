@@ -27,6 +27,11 @@ export default class Navbar extends Component {
                 Step 3
               </Link>
             </li>
+            <li>
+              <Link className="link" to="/command-list">
+                Command List
+              </Link>
+            </li>
           </ul>
         </nav>
       </header>
