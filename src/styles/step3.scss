@@ -5,8 +5,12 @@
     margin: 20px calc(5vw - 4px);
     overflow-y: auto;
 
-    .top_dmg_det, .bot_dmg_det, .int_dmg_det {
+    .top_dmg_det, .bot_dmg_det, .int_dmg_det, .damaged {
         display: none;
+    }
+
+    .box_label {
+        width: 150px;
     }
 
     .add_dmg_img {

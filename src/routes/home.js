@@ -37,7 +37,7 @@ export default class Home extends Component {
           </form>
         </div>
         <div className="damages">
-          <label htmlFor="damagedetails">Damages:</label>
+          <label htmlFor="damagedetails">Notes:</label>
           <textarea className="damagedetails"></textarea>
         </div>
         <div>

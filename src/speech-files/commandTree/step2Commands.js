@@ -13,7 +13,7 @@ const checkAll = ["verify all", "all verified", "verify it all"];
 const verify = ["yep", "yes", "yeah", "correct"];
 // unverify
 const unverify = ["no", "incorrect", "wrong"];
-const correctDims = ["dimensions"];
+const correctDims = ["dimensions", "dimension"];
 // add notes
 const addNotes = ["add notes", "added notes", "add note", "added note"];
 const endNotes = [
@@ -91,7 +91,8 @@ export function startVerification() {
         "If you would like to add images, please do so on your computer."
       );
       speech.synthesize(
-        "If you would like to add notes, please say: 'Add Notes', say the note, then say: 'End Notes', to stop adding notes."
+        "If you would like to add notes, please say: 'Add Notes', say the note, then say: 'End Notes', to stop adding notes.",
+        1
       );
       currentSection = null;
       return;
@@ -108,7 +109,8 @@ export function startVerification() {
           .replace(/H/g, "height")
           .replace(/"/g, " inch")
       : voice;
-  speech.synthesize(voice.split(" ")[0]);
+  const verb = currentSection === sections.dimensions ? "are" : "is";
+  speech.synthesize("The" + voice.split(" ")[0] + verb);
   speech.synthesize(voice.split(" ").slice(1).join(" "));
 }
 
@@ -177,19 +179,11 @@ root.addGroup(root, addNotes, function (e) {
 });
 
 root.addGroup(root, nextPage, function (e) {
+  currentSection = null;
   $(".nextpage").click();
 });
 
 root.addGroup(root, prevPage, function (e) {
+  currentSection = null;
   $(".prevpage").click();
 });
-
-root.addGroup(
-  root,
-  ["do a barrel roll", "roll out", "do a flip"],
-  async function (e) {
-    $("body").style.transition = "transform 3.5s";
-    $("body").style.transformOrigin = "50% 50%";
-    $("body").style.transform = "rotate(360deg)";
-  }
-);

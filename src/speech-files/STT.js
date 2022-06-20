@@ -1,6 +1,7 @@
 import { getTokenOrRefresh } from "./token_util";
 import { ResultReason } from "microsoft-cognitiveservices-speech-sdk";
 import { startVerification } from "./commandTree/step2Commands";
+import { startInspection } from "./commandTree/step3Commands";
 
 const speechsdk = require("microsoft-cognitiveservices-speech-sdk");
 const { wordsToNumbers } = require("words-to-numbers");
@@ -76,7 +77,6 @@ export const speech = {
       speech.speechConfig,
       speech.audioOutConfig
     );
-    speech.player = new speechsdk.SpeakerAudioDestination();
   },
   start: () => {
     speech.recognizer.recognized = speech.recognized;
@@ -145,6 +145,7 @@ export async function sttFromMic() {
 
 export async function startPage() {
   if (startSTT) {
+    speech.synthesize("You are now on");
     const route = window.location.href.replace(baseURL, "");
     switch (route) {
       case "1":
@@ -156,9 +157,10 @@ export async function startPage() {
         break;
       case "3":
         speech.synthesize("Product Inspection Page.");
+        startInspection();
         break;
       default:
-        speech.synthesize("Speech to text has begun.");
+        speech.synthesize("Home Page.");
         break;
     }
   }

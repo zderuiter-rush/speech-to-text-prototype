@@ -46,13 +46,3 @@ root.addGroup(root, nextPage, function (e) {
 root.addGroup(root, prevPage, function (e) {
   $(".prevpage").click();
 });
-
-root.addGroup(
-  root,
-  ["do a barrel roll", "roll out", "do a flip"],
-  async function (e) {
-    $("body").style.transition = "transform 3.5s";
-    $("body").style.transformOrigin = "50% 50%";
-    $("body").style.transform = "rotate(360deg)";
-  }
-);
