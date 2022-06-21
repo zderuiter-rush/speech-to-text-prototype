@@ -27,6 +27,7 @@ const considerable = ["considerable"];
 const dmgReport = ["report damage"];
 // location
 const location = ["location"];
+
 // navigate sections
 const nextSection = ["next section"];
 // add notes
@@ -129,97 +130,100 @@ var currentSection = null;
  */
 export const root = new HashTableNode();
 
-export function startInspection() {
+export async function startInspection() {
   switch (currentSection) {
     case null:
       currentSection = sections.ogpack;
-      speech.synthesize($(currentSection.prompt).innerHTML);
-      speech.synthesize("Answer with: yes or no.");
+      await speech.synthesize($(currentSection.prompt).innerHTML);
+      await speech.synthesize("Answer with: yes or no.");
       break;
     case sections.ogpack:
       currentSection = sections.reship;
-      speech.synthesize($(currentSection.prompt).innerHTML);
-      speech.synthesize("Answer with: yes or no.");
+      await speech.synthesize($(currentSection.prompt).innerHTML);
+      await speech.synthesize("Answer with: yes or no.");
       break;
     case sections.reship:
       currentSection = sections.dimensions;
-      speech.synthesize($(currentSection.prompt).innerHTML);
-      speech.synthesize(
+      await speech.synthesize($(currentSection.prompt).innerHTML);
+      await speech.synthesize(
         "To change the dimensions of the box or product, please say"
       );
-      speech.synthesize("Weight: then say the weight. And");
-      speech.synthesize("Dimensions: then say the dimensions.");
+      await speech.synthesize("Weight: then say the weight. And");
+      await speech.synthesize("Dimensions: then say the dimensions.");
       if ($(".box.w").value !== "") {
         let weight = $(".box_label.w").innerHTML + $(".box.w").value + "lbs.";
         let length = $(".box_label.l").innerHTML + $(".box.l").value + "in.";
         let depth = $(".box_label.d").innerHTML + $(".box.d").value + "in.";
         let height = $(".box_label.h").innerHTML + $(".box.h").value + "in.";
-        speech.synthesize(weight);
-        speech.synthesize(length);
-        speech.synthesize(depth);
-        speech.synthesize(height);
-        speech.synthesize(
+        await speech.synthesize(weight);
+        await speech.synthesize(length);
+        await speech.synthesize(depth);
+        await speech.synthesize(height);
+        await speech.synthesize(
           "If the stated dimensions were correct, say: next section."
         );
       }
       break;
     case sections.dimensions:
       currentSection = sections.condition;
-      speech.synthesize("When you are ready, please say");
-      speech.synthesize("Condition: then say the condition");
+      await speech.synthesize("When you are ready, please say");
+      await speech.synthesize("Condition: then say the condition");
       break;
     case sections.damaged.missParts:
       currentSection = sections.missParts;
-      speech.synthesize("Is the product missing parts?");
-      speech.synthesize("Answer with: no, some, or most.");
+      await speech.synthesize("Is the product missing parts?");
+      await speech.synthesize("Answer with: no, some, or most.");
       break;
     case sections.missParts:
       currentSection = sections.whrDmg;
-      speech.synthesize("Where is the damage?");
-      speech.synthesize("Answer with: top, front, corner, sides");
-      speech.synthesize("or bottom or back");
-      speech.synthesize("or interior");
+      await speech.synthesize("Where is the damage?");
+      await speech.synthesize("Answer with: top, front, corner, sides");
+      await speech.synthesize("or bottom or back");
+      await speech.synthesize("or interior");
       break;
     case sections.whrDmg.top:
     case sections.whrDmg.bottom:
     case sections.whrDmg.interior:
       currentSection = currentSection.vis;
-      speech.synthesize("How visible is the damage?");
-      speech.synthesize("Answer with: clearly visible, or hidden");
+      await speech.synthesize("How visible is the damage?");
+      await speech.synthesize("Answer with: clearly visible, or hidden");
       break;
     case sections.whrDmg.top.vis:
     case sections.whrDmg.bottom.vis:
     case sections.whrDmg.interior.vis:
       currentSection = currentSection.sev;
-      speech.synthesize("How severe is the damage?");
-      speech.synthesize("Answer with: minor, moderate, or considerable");
+      await speech.synthesize("How severe is the damage?");
+      await speech.synthesize("Answer with: minor, moderate, or considerable");
       break;
     case sections.whrDmg.top.vis.sev:
     case sections.whrDmg.bottom.vis.sev:
     case sections.whrDmg.interior.vis.sev:
       currentSection = sections.damaged.dmgImg;
-      speech.synthesize("If you are done reporting damage say: next section");
-      speech.synthesize("If you need to report more damage say: report damage");
+      await speech.synthesize(
+        "If you are done reporting damage say: next section"
+      );
+      await speech.synthesize(
+        "If you need to report more damage say: report damage"
+      );
       break;
     case sections.damaged.dmgImg:
       currentSection = sections.dmgImg;
-      speech.synthesize(
+      await speech.synthesize(
         "Please use your computer to add a picture of the damage"
       );
       startInspection();
       break;
     case sections.dmgImg:
       currentSection = sections.location;
-      speech.synthesize(
+      await speech.synthesize(
         "If you would like to add notes, please say: 'Add Notes', then say the note"
       );
-      speech.synthesize("To stop adding notes, say: 'End Notes'.");
-      speech.synthesize("Or, move on by saying 'Next Section'.");
+      await speech.synthesize("To stop adding notes, say: 'End Notes'.");
+      await speech.synthesize("Or, move on by saying 'Next Section'.");
       break;
     default:
-      speech.synthesize(
-        "Please say 'Location', then say the location for the product."
-      );
+      await speech.synthesize("Please say 'Location'.");
+      await speech.synthesize("then say the location for the product.");
       break;
   }
 }
@@ -315,11 +319,13 @@ root.addGroup(root, condition, function (e) {
   if ($(".condChoice").value.toLowerCase().includes("like new")) {
     $(currentSection.likeNew).click();
     $(".condChoice").value = "";
+    startInspection();
     return false;
   }
   if ($(".condChoice").value.toLowerCase().includes("new")) {
     $(currentSection.new).click();
     $(".condChoice").value = "";
+    startInspection();
     return false;
   }
   if ($(".condChoice").value.toLowerCase().includes("damaged")) {
@@ -422,21 +428,22 @@ root.addGroup(root, addNotes, function (e) {
 });
 
 root.addGroup(root, location, function (e) {
-  if (currentSection === sections.location) {
-    if ($(currentSection.area).value === "") {
-      $(currentSection.area).value = e;
-      return true;
-    } else if ($(currentSection.zone).value === "") {
-      $(currentSection.zone).value = e;
-      return true;
-    } else if ($(currentSection.loc).value === "") {
-      $(currentSection.loc).value = e;
-      return true;
-    } else {
-      $(currentSection.pallet).value = e;
-      return false;
-    }
+  // if (currentSection === sections.location) {
+  console.log("$(currentSection.area).value");
+  if ($(currentSection.area).value === "") {
+    $(currentSection.area).value = e;
+    return true;
+  } else if ($(currentSection.zone).value === "") {
+    $(currentSection.zone).value = e;
+    return true;
+  } else if ($(currentSection.loc).value === "") {
+    $(currentSection.loc).value = e;
+    return true;
+  } else {
+    $(currentSection.pallet).value = e;
+    return false;
   }
+  // }
 });
 
 root.addGroup(root, prevPage, function (e) {

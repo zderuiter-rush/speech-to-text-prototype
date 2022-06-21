@@ -78,11 +78,11 @@ export const speech = {
       speech.audioOutConfig
     );
   },
-  start: () => {
+  start: async () => {
     speech.recognizer.recognized = speech.recognized;
     speech.recognizer.recognizing = speech.recognizing;
     speech.recognizer.canceled = speech.canceled;
-    speech.recognizer.startContinuousRecognitionAsync();
+    await speech.recognizer.startContinuousRecognitionAsync();
     $(".speechtext").innerHTML = "Start talking and it will appear here!";
   },
   recognized: (s, e) => {
@@ -103,25 +103,25 @@ export const speech = {
     }
     console.log(str);
   },
-  stop: () => {
-    speech.recognizer.stopContinuousRecognitionAsync();
+  stop: async () => {
+    await speech.recognizer.stopContinuousRecognitionAsync();
     speech.recognizer.close();
     speech.recognizer = null;
-    speech.audioInConfig.close();
-    speech.audioInConfig = null;
-    speech.speechConfig.close();
-    speech.speechConfig = null;
+    // speech.audioInConfig.close();
+    // speech.audioInConfig = null;
+    // speech.speechConfig.close();
+    // speech.speechConfig = null;
   },
-  synthesize: (text, rate = 1.5, close = false) => {
-    speech.synthesizer.speakSsmlAsync(
+  synthesize: async (text, rate = 1.5, close = false) => {
+    await speech.synthesizer.speakSsmlAsync(
       speech.createSsml(text, rate),
       (result) => {
         if (result) {
           if (close) {
             speech.synthesizer.close();
             speech.synthesizer = null;
-            speech.audioOutConfig.close();
-            speech.audioOutConfig = null;
+            // speech.audioOutConfig.close();
+            // speech.audioOutConfig = null;
           }
           return result.audioData;
         }
@@ -149,41 +149,41 @@ export const speech = {
 export async function sttFromMic() {
   startSTT = !startSTT;
   if (!startSTT) {
-    speech.synthesize("Speech to text has ended.", 1.5, false);
+    await speech.synthesize("Speech to text has ended.", 1.5, false);
     commandTree.reset();
-    speech.stop();
+    await speech.stop();
     return;
   }
 
   const cred = await getCredentials();
 
   speech.initialize(cred.key, cred.region);
-  speech.start();
+  await speech.start();
 
   startPage();
 }
 
-export function startPage() {
+export async function startPage() {
   if (startSTT) {
-    speech.synthesize("You are now on");
+    await speech.synthesize("You are now on");
     const route = window.location.href.replace(baseURL, "");
     switch (route) {
       case "1":
-        speech.synthesize("Recieve Products Page.");
+        await speech.synthesize("Recieve Products Page.");
         break;
       case "2":
-        speech.synthesize("Verification Page.");
+        await speech.synthesize("Verification Page.");
         startVerification();
         break;
       case "3":
-        speech.synthesize("Product Inspection Page.");
+        await speech.synthesize("Product Inspection Page.");
         startInspection();
         break;
       case "command-list":
-        speech.synthesize("Command List Page");
+        await speech.synthesize("Command List Page");
         break;
       default:
-        speech.synthesize("Home Page.");
+        await speech.synthesize("Home Page.");
         break;
     }
   }

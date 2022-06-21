@@ -67,7 +67,7 @@ var currentSection = null;
  */
 export const root = new HashTableNode();
 
-export function startVerification() {
+export async function startVerification() {
   switch (currentSection) {
     case null:
       currentSection = sections.category;
@@ -83,14 +83,14 @@ export function startVerification() {
       break;
     case sections.material:
       currentSection = sections.images;
-      speech.synthesize("Please look at your computer.");
-      speech.synthesize("Do these images look correct?");
+      await speech.synthesize("Please look at your computer.");
+      await speech.synthesize("Do these images look correct?");
       return;
     default:
-      speech.synthesize(
+      await speech.synthesize(
         "If you would like to add images, please do so on your computer."
       );
-      speech.synthesize(
+      await speech.synthesize(
         "If you would like to add notes, please say: 'Add Notes', say the note, then say: 'End Notes', to stop adding notes.",
         1
       );
@@ -110,8 +110,8 @@ export function startVerification() {
           .replace(/"/g, " inch")
       : voice;
   const verb = currentSection === sections.dimensions ? "are" : "is";
-  speech.synthesize("The" + voice.split(" ")[0] + verb);
-  speech.synthesize(voice.split(" ").slice(1).join(" "));
+  await speech.synthesize("The" + voice.split(" ")[0] + verb);
+  await speech.synthesize(voice.split(" ").slice(1).join(" "));
 }
 
 root.addGroup(root, verify, function (e) {
@@ -119,13 +119,13 @@ root.addGroup(root, verify, function (e) {
   startVerification();
 });
 
-root.addGroup(root, unverify, function (e) {
+root.addGroup(root, unverify, async function (e) {
   $(currentSection.incorrect).click();
   switch (currentSection) {
     case sections.category:
       break;
     case sections.dimensions:
-      speech.synthesize("What are the correct dimensions?");
+      await speech.synthesize("What are the correct dimensions?");
       break;
     case sections.color:
       break;
