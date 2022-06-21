@@ -1,10 +1,11 @@
-import { getTokenOrRefresh } from "./token_util";
+import { getCredentials } from "./key_util";
 import { ResultReason } from "microsoft-cognitiveservices-speech-sdk";
 import { startVerification } from "./commandTree/step2Commands";
 import { startInspection } from "./commandTree/step3Commands";
 
 const speechsdk = require("microsoft-cognitiveservices-speech-sdk");
 const { wordsToNumbers } = require("words-to-numbers");
+
 const $ = (s, o = document) => o.querySelector(s);
 const baseURL = "http://localhost:3000/";
 // const baseURL = "https://sheltered-plateau-09726.herokuapp.com/";
@@ -64,12 +65,8 @@ export const speech = {
   audioOutConfig: null,
   recognizer: null,
   synthesizer: null,
-  player: null,
-  initialize: (authToken, region) => {
-    speech.speechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(
-      authToken,
-      region
-    );
+  initialize: (key, region) => {
+    speech.speechConfig = speechsdk.SpeechConfig.fromSubscription(key, region);
     speech.audioInConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
     speech.audioOutConfig = speechsdk.AudioConfig.fromDefaultSpeakerOutput();
     speech.recognizer = new speechsdk.SpeechRecognizer(
@@ -81,9 +78,10 @@ export const speech = {
       speech.audioOutConfig
     );
   },
-  start: async () => {
+  start: () => {
     speech.recognizer.recognized = speech.recognized;
     speech.recognizer.recognizing = speech.recognizing;
+    speech.recognizer.canceled = speech.canceled;
     speech.recognizer.startContinuousRecognitionAsync();
     $(".speechtext").innerHTML = "Start talking and it will appear here!";
   },
@@ -98,9 +96,21 @@ export const speech = {
   recognizing: (s, e) => {
     $(".speechtext").innerHTML = e.result.text;
   },
+  canceled: (s, e) => {
+    var str = "(cancel) Reason: " + speechsdk.CancellationReason[e.reason];
+    if (e.reason === speechsdk.CancellationReason.Error) {
+      str += ": " + e.errorDetails;
+    }
+    console.log(str);
+  },
   stop: () => {
     speech.recognizer.stopContinuousRecognitionAsync();
     speech.recognizer.close();
+    speech.recognizer = null;
+    speech.audioInConfig.close();
+    speech.audioInConfig = null;
+    speech.speechConfig.close();
+    speech.speechConfig = null;
   },
   synthesize: (text, rate = 1.5, close = false) => {
     speech.synthesizer.speakSsmlAsync(
@@ -110,6 +120,8 @@ export const speech = {
           if (close) {
             speech.synthesizer.close();
             speech.synthesizer = null;
+            speech.audioOutConfig.close();
+            speech.audioOutConfig = null;
           }
           return result.audioData;
         }
@@ -117,6 +129,9 @@ export const speech = {
       (error) => {
         console.log(error);
         speech.synthesizer.close();
+        speech.synthesizer = null;
+        speech.audioOutConfig.close();
+        speech.audioOutConfig = null;
       }
     );
   },
@@ -140,9 +155,9 @@ export async function sttFromMic() {
     return;
   }
 
-  const tokenObj = await getTokenOrRefresh();
+  const cred = await getCredentials();
 
-  speech.initialize(tokenObj.authToken, tokenObj.region);
+  speech.initialize(cred.key, cred.region);
   speech.start();
 
   startPage();

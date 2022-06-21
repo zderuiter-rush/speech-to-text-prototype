@@ -25,6 +25,8 @@ const minor = ["minor"];
 const moderate = ["moderate"];
 const considerable = ["considerable"];
 const dmgReport = ["report damage"];
+// location
+const location = ["location"];
 // navigate sections
 const nextSection = ["next section"];
 // add notes
@@ -63,7 +65,7 @@ const sections = {
   },
   damaged: {
     missParts: "missParts",
-    trash: "trash",
+    dmgImg: "dmgImg",
   },
   missParts: {
     no: ".no_miss",
@@ -108,7 +110,13 @@ const sections = {
       },
     },
   },
-  trash: {},
+  dmgImg: {},
+  location: {
+    area: ".l_area",
+    zone: ".l_zone",
+    loc: ".l_loc",
+    pallet: ".l_pallet",
+  },
 };
 var currentSection = null;
 
@@ -189,21 +197,28 @@ export function startInspection() {
     case sections.whrDmg.top.vis.sev:
     case sections.whrDmg.bottom.vis.sev:
     case sections.whrDmg.interior.vis.sev:
-      currentSection = sections.damaged.trash;
+      currentSection = sections.damaged.dmgImg;
       speech.synthesize("If you are done reporting damage say: next section");
       speech.synthesize("If you need to report more damage say: report damage");
       break;
-    case sections.damaged.trash:
-      currentSection = sections.trash;
+    case sections.damaged.dmgImg:
+      currentSection = sections.dmgImg;
       speech.synthesize(
         "Please use your computer to add a picture of the damage"
       );
       startInspection();
       break;
+    case sections.dmgImg:
+      currentSection = sections.location;
+      speech.synthesize(
+        "If you would like to add notes, please say: 'Add Notes', then say the note"
+      );
+      speech.synthesize("To stop adding notes, say: 'End Notes'.");
+      speech.synthesize("Or, move on by saying 'Next Section'.");
+      break;
     default:
       speech.synthesize(
-        "If you would like to add notes, please say: 'Add Notes', say the note, then say: 'End Notes', to stop adding notes.",
-        1
+        "Please say 'Location', then say the location for the product."
       );
       break;
   }
@@ -404,6 +419,24 @@ root.addGroup(root, addNotes, function (e) {
   });
 
   return continueDamage;
+});
+
+root.addGroup(root, location, function (e) {
+  if (currentSection === sections.location) {
+    if ($(currentSection.area).value === "") {
+      $(currentSection.area).value = e;
+      return true;
+    } else if ($(currentSection.zone).value === "") {
+      $(currentSection.zone).value = e;
+      return true;
+    } else if ($(currentSection.loc).value === "") {
+      $(currentSection.loc).value = e;
+      return true;
+    } else {
+      $(currentSection.pallet).value = e;
+      return false;
+    }
+  }
 });
 
 root.addGroup(root, prevPage, function (e) {

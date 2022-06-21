@@ -351,6 +351,55 @@ export default class Step3 extends Component {
                 <div>
                   <textarea className="add_notes"></textarea>
                 </div>
+                <br />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table>
+          <tbody>
+            <tr>
+              <td>
+                <h2>Location</h2>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label htmlFor="l_area">Area</label>
+                <div>
+                  <input type="text" className="l_area" />
+                </div>
+                <br />
+                <br />
+              </td>
+              <td>
+                <label htmlFor="l_zone">Zone</label>
+                <div>
+                  <input type="text" className="l_zone" />
+                </div>
+                <br />
+                <br />
+              </td>
+              <td>
+                <label htmlFor="l_loc">Location</label>
+                <div>
+                  <input type="text" className="l_loc" />
+                </div>
+                <br />
+                <br />
+              </td>
+              <td>
+                <strong> -OR- </strong>
+                <br />
+                <br />
+              </td>
+              <td>
+                <label htmlFor="l_pallet">Pallet</label>
+                <div>
+                  <input type="text" className="l_pallet" />
+                </div>
+                <br />
+                <br />
               </td>
             </tr>
           </tbody>
