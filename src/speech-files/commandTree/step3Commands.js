@@ -43,6 +43,8 @@ const endNotes = [
 ];
 // navigate pages
 const prevPage = ["last page", "previous page"];
+// control voice
+const control = ["control voice"];
 
 // sections of inspection page
 const sections = {

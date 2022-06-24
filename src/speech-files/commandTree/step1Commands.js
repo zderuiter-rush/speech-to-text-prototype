@@ -13,6 +13,8 @@ const suppCode = ["supplier code"];
 // navigate pages
 const nextPage = ["next page"];
 const prevPage = ["last page", "previous page"];
+// control voice
+const control = ["control voice"];
 
 /**
  * List of all commands with their respective functions

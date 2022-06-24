@@ -28,6 +28,8 @@ const endNotes = [
 // navigate pages
 const nextPage = ["next page"];
 const prevPage = ["last page", "previous page"];
+// control voice
+const control = ["control voice"];
 
 // Sections of verification page
 const sections = {
