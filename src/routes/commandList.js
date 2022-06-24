@@ -1,5 +1,6 @@
 import { Component } from "react";
 import "../styles/commandList.scss";
+import { timer } from "../speech-files/STT";
 
 const $ = (s, o = document) => o.querySelector(s);
 const $$ = (s, o = document) => o.querySelectorAll(s);
@@ -11,15 +12,72 @@ export default class CommandList extends Component {
         $(".commands", container).classList.toggle("expand");
       });
     });
+
+    $$(".timer").forEach(function (opt) {
+      opt.addEventListener("change", function () {
+        if ($(".timer.on").checked) {
+          timer(true);
+        } else {
+          timer(false);
+        }
+      });
+    });
   }
 
   render() {
     return (
       <div className="commandList_cont">
         <div>
+          <table className="timerTable">
+            <tbody>
+              <tr>
+                <td>
+                  <h4>Set Timer</h4>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <input type="radio" className="timer on" name="sttTimer" />
+                  <label>On</label>
+                  <input
+                    type="radio"
+                    className="timer off"
+                    name="sttTimer"
+                    defaultChecked
+                  />
+                  <label>Off</label>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
           <h6>
             <i>Click the titles to toggle expanding the commands...</i>
           </h6>
+          <div className="container">
+            <h2 className="title">Every Page Commands</h2>
+            <ul className="commands">
+              <li>
+                <strong>Next/Previous Page:</strong> if the page has the button,
+                this will navigate you to the next/previous page
+              </li>
+              <li>
+                <strong>Control Voice:</strong> then say...
+                <ul>
+                  <li>
+                    <strong>Pause:</strong> stop voice from executing commands
+                  </li>
+                  <li>
+                    <strong>Resume:</strong> have voice resume executing
+                    commands
+                  </li>
+                  <li>
+                    <strong>Pause:</strong> end voice altogether
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
           <div className="container">
             <h2 className="title">Home Page Commands</h2>
             <ul className="commands">

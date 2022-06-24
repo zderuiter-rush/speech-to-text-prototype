@@ -1,5 +1,6 @@
 import HashTableNode from "./commandTree";
 import { speech } from "../STT";
+import { controlVoice } from "../STT";
 
 const $ = (s, o = document) => o.querySelector(s);
 
@@ -27,7 +28,7 @@ const considerable = ["considerable"];
 const dmgReport = ["report damage"];
 // location
 const location = ["location"];
-
+const areas = ["Receiving", "receiving"];
 // navigate sections
 const nextSection = ["next section"];
 // add notes
@@ -429,17 +430,23 @@ root.addGroup(root, addNotes, function (e) {
 
 root.addGroup(root, location, function (e) {
   // if (currentSection === sections.location) {
-  console.log("$(currentSection.area).value");
-  if ($(currentSection.area).value === "") {
+  currentSection = sections.location;
+  console.log("location");
+  if (e === "") return true;
+  if (
+    $(currentSection.area).value === "" &&
+    (/^[0-9]{3}$/.test(e) || areas.includes(e))
+  ) {
+    console.log("area");
     $(currentSection.area).value = e;
     return true;
-  } else if ($(currentSection.zone).value === "") {
-    $(currentSection.zone).value = e;
-    return true;
-  } else if ($(currentSection.loc).value === "") {
-    $(currentSection.loc).value = e;
-    return true;
+  } else if ($(currentSection.zone).value === "" && /[ABCU]/.test(e)) {
+    console.log("zone loc");
+    $(currentSection.zone).value = /[ABCU]/.exec(e)[0];
+    $(currentSection.loc).value = "0003";
+    return false;
   } else {
+    console.log("pallet");
     $(currentSection.pallet).value = e;
     return false;
   }
@@ -450,3 +457,5 @@ root.addGroup(root, prevPage, function (e) {
   currentSection = null;
   $(".prevpage").click();
 });
+
+root.addGroup(root, control, controlVoice);

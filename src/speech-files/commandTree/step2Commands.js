@@ -1,5 +1,6 @@
 import HashTableNode from "./commandTree";
 import { speech } from "../STT";
+import { controlVoice } from "../STT";
 
 const $ = (s, o = document) => o.querySelector(s);
 const $$ = (s, o = document) => o.querySelectorAll(s);
@@ -187,3 +188,5 @@ root.addGroup(root, prevPage, function (e) {
   currentSection = null;
   $(".prevpage").click();
 });
+
+root.addGroup(root, control, controlVoice);

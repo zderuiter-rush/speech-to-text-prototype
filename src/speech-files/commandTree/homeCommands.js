@@ -1,4 +1,5 @@
 import HashTableNode from "./commandTree";
+import { controlVoice } from "../STT";
 
 const $ = (s, o = document) => o.querySelector(s);
 
@@ -21,6 +22,8 @@ const endDamage = [
 // navigate pages
 const nextPage = ["next page"];
 const prevPage = ["last page", "previous page"];
+// control voice
+const control = ["control voice"];
 
 /**
  * List of all commands with their respective functions
@@ -85,6 +88,8 @@ root.addGroup(root, nextPage, function (e) {
 root.addGroup(root, prevPage, function (e) {
   $(".prevpage").click();
 });
+
+root.addGroup(root, control, controlVoice);
 
 root.addGroup(
   root,

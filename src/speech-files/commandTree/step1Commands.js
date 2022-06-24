@@ -1,6 +1,9 @@
 import HashTableNode from "./commandTree";
+import "select2";
+import $ from "jquery";
+import { controlVoice } from "../STT";
 
-const $ = (s, o = document) => o.querySelector(s);
+const qs$ = (s, o = document) => o.querySelector(s);
 
 /**
  * List of all command groups
@@ -23,26 +26,35 @@ export const root = new HashTableNode();
 root.addGroup(root, suppCode, function (e) {
   // TODO: instead of saying letters, say words that start with the letters
   // and pull  first letter to put in
-  if (/[0-9A-Z]{2,4}01(?!-)/.test($(".select2-search__field").value)) {
-    $(".select2-search__field").value += "-";
+  if ($(".suppliercodes").select2("data").length > 0) {
+    $(".suppliercodes").select2().val(null).trigger("change");
   }
-  let test = /([0-9A-Z]{1,4})?((01)|(01(-([A-Z]{2,}){1,2})))?/;
+  if (/[0-9A-Z]{2,4}01(?!-)/.test(qs$(".select2-search__field").value)) {
+    console.log("stuff: " + qs$(".select2-search__field").value);
+    qs$(".select2-search__field").value += "-";
+  }
+  let test = /([0-9A-Z]{1,4})?((01)|(01(-?([A-Z]{2,}){1,2})))?/;
   if (test.test(e)) {
-    $(".select2-search__field").value += test.exec(e)[0];
+    console.log("test: " + test.exec(e)[0]);
+    qs$(".select2-search__field").value += test.exec(e)[0];
   }
   if (
-    /[0-9A-Z]{2,4}01-([A-Z]{2,}){1,2}/.test($(".select2-search__field").value)
+    /[0-9A-Z]{2,4}01-([A-Z]{2,}){1,2}/.test(qs$(".select2-search__field").value)
   ) {
-    $(".select2-search__field").submit();
+    console.log("select: " + qs$(".select2-search__field").value.toString());
+    const val = qs$(".select2-search__field").value.toString();
+    $(".suppliercodes").select2().val([val]).trigger("change");
     return false;
   }
   return true;
 });
 
 root.addGroup(root, nextPage, function (e) {
-  $(".nextpage").click();
+  qs$(".nextpage").click();
 });
 
 root.addGroup(root, prevPage, function (e) {
-  $(".prevpage").click();
+  qs$(".prevpage").click();
 });
+
+root.addGroup(root, control, controlVoice);

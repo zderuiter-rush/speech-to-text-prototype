@@ -13,6 +13,12 @@ const baseURL = "http://localhost:3000/";
 // Speech to text setup
 var startSTT = false;
 
+// timer for speech to text to make sure it doesn't keep recording indefinitely
+// change timerOn to true to turn on timer
+var sttTimer = null;
+var sttInterval = 5000;
+var timerOn = false;
+
 export const commandTree = {
   command: null,
   commandText: null,
@@ -30,32 +36,37 @@ export const commandTree = {
       ""
     );
 
-    let keys = null;
-    if (commandTree.command["txt"] !== "") {
-      let cmdContent = key.substring(
-        key.toLowerCase().indexOf(commandTree.command["txt"]) +
-          commandTree.command["txt"].length +
-          1
-      );
-      keys = cmdContent.split(" ");
-    } else {
-      keys = key.split(" ");
-    }
-
-    for (let i = 0; i < keys.length; i++) {
-      let num = wordsToNumbers(keys[i], { impliedHundreds: true });
-      if (/[0-9]*(.[0-9]*)?/.test(num)) {
-        keys[i] = num.toString();
+    if (
+      !speech.paused ||
+      (speech.paused && commandTree.command["txt"] === "control voice")
+    ) {
+      let keys = null;
+      if (commandTree.command["txt"] !== "") {
+        let cmdContent = key.substring(
+          key.toLowerCase().indexOf(commandTree.command["txt"]) +
+            commandTree.command["txt"].length +
+            1
+        );
+        keys = cmdContent.split(" ");
+      } else {
+        keys = key.split(" ");
       }
-    }
 
-    if (commandTree.command[0] !== null) {
-      commandTree.root.setKeepCommand(commandTree.command["cmd"](keys[0]));
+      for (let i = 0; i < keys.length; i++) {
+        let num = wordsToNumbers(keys[i], { impliedHundreds: true });
+        if (/[0-9]*(.[0-9]*)?/.test(num)) {
+          keys[i] = num.toString();
+        }
+      }
+
+      if (commandTree.command[0] !== null) {
+        commandTree.root.setKeepCommand(commandTree.command["cmd"](keys[0]));
+      }
+      commandTree.root.doCommand(
+        commandTree.command["cmd"],
+        keys.slice(1).join(" ")
+      );
     }
-    commandTree.root.doCommand(
-      commandTree.command["cmd"],
-      keys.slice(1).join(" ")
-    );
   },
 };
 
@@ -65,6 +76,7 @@ export const speech = {
   audioOutConfig: null,
   recognizer: null,
   synthesizer: null,
+  paused: false,
   initialize: (key, region) => {
     speech.speechConfig = speechsdk.SpeechConfig.fromSubscription(key, region);
     speech.audioInConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
@@ -90,10 +102,14 @@ export const speech = {
       $(".speechtext").innerHTML = "Please speak louder or more clearly...";
     } else {
       $(".speechtext").innerHTML = e.result.text;
+      if (timerOn && !speech.paused && startSTT) {
+        sttTimer = setTimeout(sttFromMic, sttInterval);
+      }
       commandTree.handleRecognizedSpeech(e.result.text);
     }
   },
   recognizing: (s, e) => {
+    if (timerOn && !speech.paused && startSTT) clearTimeout(sttTimer);
     $(".speechtext").innerHTML = e.result.text;
   },
   canceled: (s, e) => {
@@ -130,8 +146,8 @@ export const speech = {
         console.log(error);
         speech.synthesizer.close();
         speech.synthesizer = null;
-        speech.audioOutConfig.close();
-        speech.audioOutConfig = null;
+        // speech.audioOutConfig.close();
+        // speech.audioOutConfig = null;
       }
     );
   },
@@ -149,9 +165,10 @@ export const speech = {
 export async function sttFromMic() {
   startSTT = !startSTT;
   if (!startSTT) {
-    await speech.synthesize("Speech to text has ended.", 1.5, false);
+    await speech.synthesize("Voice ended.", 1.5, false);
     commandTree.reset();
     await speech.stop();
+    if (timerOn) clearTimeout(sttTimer);
     return;
   }
 
@@ -159,6 +176,8 @@ export async function sttFromMic() {
 
   speech.initialize(cred.key, cred.region);
   await speech.start();
+
+  if (timerOn) sttTimer = setTimeout(sttFromMic, sttInterval);
 
   startPage();
 }
@@ -186,5 +205,39 @@ export async function startPage() {
         await speech.synthesize("Home Page.");
         break;
     }
+  }
+}
+
+export function controlVoice(cmd) {
+  if (cmd.toLowerCase().includes("pause")) {
+    speech.paused = true;
+    if (timerOn) {
+      clearTimeout(sttTimer);
+      sttTimer = setTimeout(sttFromMic, sttInterval);
+    }
+    speech.synthesize("Voice paused");
+    return false;
+  }
+  if (cmd.toLowerCase().includes("resume")) {
+    speech.paused = false;
+    if (timerOn) {
+      clearTimeout(sttTimer);
+      sttTimer = setTimeout(sttFromMic, sttInterval);
+    }
+    speech.synthesize("Voice resumed");
+    return false;
+  }
+  if (cmd.toLowerCase().includes("stop")) {
+    sttFromMic();
+    return false;
+  }
+  return true;
+}
+
+export function timer(on) {
+  timerOn = on;
+  clearTimeout(sttTimer);
+  if (on) {
+    sttTimer = setTimeout(sttFromMic, sttInterval);
   }
 }
