@@ -7,8 +7,8 @@ const speechsdk = require("microsoft-cognitiveservices-speech-sdk");
 const { wordsToNumbers } = require("words-to-numbers");
 
 const $ = (s, o = document) => o.querySelector(s);
-const baseURL = "http://localhost:3000/";
-// const baseURL = "https://sheltered-plateau-09726.herokuapp.com/";
+// const baseURL = "http://localhost:3000/";
+const baseURL = "https://sheltered-plateau-09726.herokuapp.com/";
 
 // Speech to text setup
 var startSTT = false;
