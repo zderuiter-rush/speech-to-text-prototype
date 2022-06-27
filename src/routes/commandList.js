@@ -1,12 +1,14 @@
 import { Component } from "react";
 import "../styles/commandList.scss";
 import { timer } from "../speech-files/STT";
+import { commandTree } from "../speech-files/STT";
 
 const $ = (s, o = document) => o.querySelector(s);
 const $$ = (s, o = document) => o.querySelectorAll(s);
 
 export default class CommandList extends Component {
   componentDidMount() {
+    commandTree.root = null;
     $$(".container").forEach(function (container) {
       container.addEventListener("click", function () {
         $(".commands", container).classList.toggle("expand");
@@ -72,7 +74,7 @@ export default class CommandList extends Component {
                     commands
                   </li>
                   <li>
-                    <strong>Pause:</strong> end voice altogether
+                    <strong>Stop:</strong> end voice altogether
                   </li>
                 </ul>
               </li>
