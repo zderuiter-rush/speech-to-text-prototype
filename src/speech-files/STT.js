@@ -7,8 +7,8 @@ const speechsdk = require("microsoft-cognitiveservices-speech-sdk");
 const { wordsToNumbers } = require("words-to-numbers");
 
 const $ = (s, o = document) => o.querySelector(s);
-const baseURL = "http://localhost:3000/";
-// const baseURL = "https://sheltered-plateau-09726.herokuapp.com/";
+// const baseURL = "http://localhost:3000/";
+const baseURL = "https://sheltered-plateau-09726.herokuapp.com/";
 
 // Speech to text setup
 var startSTT = false;
@@ -190,6 +190,8 @@ export async function startPage() {
   if (startSTT) {
     speech.synthesize("You are now on");
     const route = window.location.href.replace(baseURL, "");
+    console.log(window.location.href);
+    console.log(route);
     switch (route) {
       case "1":
         speech.synthesize("Recieve Products Page.");
