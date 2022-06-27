@@ -144,65 +144,66 @@ export async function startInspection() {
   switch (currentSection) {
     case null:
       currentSection = sections.ogpack;
-      speech.synthesize($(currentSection.prompt).innerHTML);
-      speech.synthesize("Waiting ...");
+      speech.addToQueue($(currentSection.prompt).innerHTML);
       break;
     case sections.ogpack:
       currentSection = sections.reship;
-      speech.synthesize($(currentSection.prompt).innerHTML);
-      speech.synthesize("Waiting ...");
+      speech.addToQueue($(currentSection.prompt).innerHTML);
       break;
     case sections.reship:
       currentSection = sections.dimensions;
-      speech.synthesize($(currentSection.prompt).innerHTML);
+      speech.addToQueue($(currentSection.prompt).innerHTML);
       if ($(".box.w").value !== "" && !currentSection.redo) {
         let weight = $(".box_label.w").innerHTML + $(".box.w").value + "lbs.";
         let dimensions =
           `Dimensions: ${$(".box.l").value} by ` +
           `${$(".box.d").value} by ${$(".box.h").value}`;
-        speech.synthesize(weight);
-        speech.synthesize(dimensions);
-        speech.synthesize("Are these dimensions correct?");
-      } else {
-        speech.synthesize(
-          "To change the dimensions of the box or product, please say"
+        speech.addToQueue(
+          `${weight}... ${dimensions}... Are these dimensions correct?`
         );
-        speech.synthesize("Weight: then say the weight. And/Or");
-        speech.synthesize("Dimensions: then say the dimensions.");
+      } else {
+        speech.addToQueue(
+          "To change the dimensions of the box or product, please say: " +
+            "Weight: then say the weight. And/Or: " +
+            "Dimensions: then say the dimensions."
+        );
       }
       break;
     case sections.dimensions:
       currentSection = sections.condition;
-      speech.synthesize("When you are ready, please say");
-      speech.synthesize("Condition: then say the condition");
+      speech.addToQueue(
+        "When you are ready, please say: Condition: then say the condition"
+      );
       break;
     case sections.damaged.missParts:
       currentSection = sections.missParts;
-      speech.synthesize("Is the product missing parts?");
-      speech.synthesize("Answer with: no, some, or most.");
+      speech.addToQueue(
+        "Is the product missing parts? Answer with: no, some, or most."
+      );
       break;
     case sections.missParts:
       currentSection = sections.whrDmg;
-      speech.synthesize("Where is the damage?");
-      speech.synthesize("Answer with:");
-      if (!$(".top._dmg").checked)
-        speech.synthesize("top, front, corner, or sides");
-      if (!$(".bot._dmg").checked) speech.synthesize("bottom or back");
-      if (!$(".int._dmg").checked) speech.synthesize("interior");
+      let prompt = "Where is the damage? Answer with: ";
+      if (!$(".top._dmg").checked) prompt += "top, front, corner, or sides. ";
+      if (!$(".bot._dmg").checked) prompt += "bottom or back. ";
+      if (!$(".int._dmg").checked) prompt += "interior.";
+      speech.addToQueue(prompt);
       break;
     case sections.whrDmg.top:
     case sections.whrDmg.bottom:
     case sections.whrDmg.interior:
       currentSection = currentSection.vis;
-      speech.synthesize("How visible is the damage?");
-      speech.synthesize("Answer with: clearly visible, or hidden");
+      speech.addToQueue(
+        "How visible is the damage? Answer with: clearly visible, or hidden"
+      );
       break;
     case sections.whrDmg.top.vis:
     case sections.whrDmg.bottom.vis:
     case sections.whrDmg.interior.vis:
       currentSection = currentSection.sev;
-      speech.synthesize("How severe is the damage?");
-      speech.synthesize("Answer with: minor, moderate, or considerable");
+      speech.addToQueue(
+        "How severe is the damage? Answer with: minor, moderate, or considerable"
+      );
       break;
     case sections.whrDmg.top.vis.sev:
     case sections.whrDmg.bottom.vis.sev:
@@ -213,8 +214,7 @@ export async function startInspection() {
         !$(".int._dmg").checked
       ) {
         currentSection = sections.damaged.addDmg;
-        speech.synthesize("Is there ");
-        speech.synthesize("any additional damage?");
+        speech.addToQueue("Is there any additional damage?");
       } else {
         currentSection = sections.damaged.dmgImg;
         startInspection();
@@ -222,22 +222,23 @@ export async function startInspection() {
       break;
     case sections.damaged.dmgImg:
       currentSection = sections.dmgImg;
-      speech.synthesize(
+      speech.addToQueue(
         "Please use your computer to add a picture of the damage"
       );
       startInspection();
       break;
     case sections.dmgImg:
       currentSection = sections.location;
-      speech.synthesize(
-        "If you would like to add notes, please say: 'Add Notes', then say the note"
+      speech.addToQueue(
+        "If you would like to add notes, please say: 'Add Notes', then say the note... " +
+          "To stop adding notes, say: 'End Notes'... " +
+          "Or, move on by saying 'Next Section'."
       );
-      speech.synthesize("To stop adding notes, say: 'End Notes'.");
-      speech.synthesize("Or, move on by saying 'Next Section'.");
       break;
     default:
-      speech.synthesize("Please say 'Location'.");
-      speech.synthesize("then say the location for the product.");
+      speech.addToQueue(
+        "Please say 'Location': then say the location for the product."
+      );
       break;
   }
 }
@@ -392,8 +393,9 @@ root.addGroup(root, dmgTop, function (e) {
       currentSection = currentSection.top;
       startInspection();
     } else {
-      speech.synthesize("Damaged top, front, corner, or sides");
-      speech.synthesize("has already been chosen");
+      speech.addToQueue(
+        "Damaged top, front, corner, or sides: has already been chosen"
+      );
     }
   }
   return false;
@@ -405,8 +407,7 @@ root.addGroup(root, dmgBot, function (e) {
       currentSection = currentSection.bottom;
       startInspection();
     } else {
-      speech.synthesize("Damaged bottom or back");
-      speech.synthesize("has already been chosen");
+      speech.addToQueue("Damaged bottom or back : has already been chosen");
     }
   }
   return false;
@@ -418,8 +419,7 @@ root.addGroup(root, dmgInt, function (e) {
       currentSection = currentSection.interior;
       startInspection();
     } else {
-      speech.synthesize("Damaged interior");
-      speech.synthesize("has already been chosen");
+      speech.addToQueue("Damaged interior: has already been chosen");
     }
   }
   return false;

@@ -86,14 +86,15 @@ export function startVerification() {
       break;
     case sections.material:
       currentSection = sections.images;
-      speech.synthesize("Please look at your computer.");
-      speech.synthesize("Do these images look correct?");
+      speech.addToQueue(
+        "Please look at your computer... Do these images look correct?"
+      );
       return;
     default:
-      speech.synthesize(
+      speech.addToQueue(
         "If you would like to add images, please do so on your computer."
       );
-      speech.synthesize(
+      speech.addToQueue(
         "If you would like to add notes, please say: 'Add Notes', say the note, then say: 'End Notes', to stop adding notes.",
         1
       );
@@ -113,8 +114,9 @@ export function startVerification() {
           .replace(/"/g, " inch")
       : voice;
   const verb = currentSection === sections.dimensions ? "are" : "is";
-  speech.synthesize("The" + voice.split(" ")[0] + verb);
-  speech.synthesize(voice.split(" ").slice(1).join(" "));
+  speech.addToQueue(
+    "The" + voice.split(" ")[0] + verb + voice.split(" ").slice(1).join(" ")
+  );
 }
 
 root.addGroup(root, verify, function (e) {
@@ -128,7 +130,7 @@ root.addGroup(root, unverify, function (e) {
     case sections.category:
       break;
     case sections.dimensions:
-      speech.synthesize("What are the correct dimensions?");
+      speech.addToQueue("What are the correct dimensions?");
       break;
     case sections.color:
       break;

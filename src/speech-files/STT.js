@@ -7,8 +7,8 @@ const speechsdk = require("microsoft-cognitiveservices-speech-sdk");
 const { wordsToNumbers } = require("words-to-numbers");
 
 const $ = (s, o = document) => o.querySelector(s);
-// const baseURL = "http://localhost:3000/";
-const baseURL = "https://sheltered-plateau-09726.herokuapp.com/";
+const baseURL = "http://localhost:3000/";
+// const baseURL = "https://sheltered-plateau-09726.herokuapp.com/";
 
 // Speech to text setup
 var startSTT = false;
@@ -81,18 +81,13 @@ export const speech = {
   recognizer: null,
   synthesizer: null,
   paused: false,
+  queue: [],
+  player: null,
+  playing: false,
   initialize: (key, region) => {
     speech.speechConfig = speechsdk.SpeechConfig.fromSubscription(key, region);
     speech.audioInConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
-    speech.audioOutConfig = speechsdk.AudioConfig.fromDefaultSpeakerOutput();
-    speech.recognizer = new speechsdk.SpeechRecognizer(
-      speech.speechConfig,
-      speech.audioInConfig
-    );
-    speech.synthesizer = new speechsdk.SpeechSynthesizer(
-      speech.speechConfig,
-      speech.audioOutConfig
-    );
+    speech.recognizer = new speechsdk.SpeechRecognizer(speech.speechConfig);
   },
   start: async () => {
     speech.recognizer.recognized = speech.recognized;
@@ -126,32 +121,43 @@ export const speech = {
   stop: async () => {
     await speech.recognizer.stopContinuousRecognitionAsync();
     speech.recognizer.close();
-    speech.recognizer = null;
-    // speech.audioInConfig.close();
-    // speech.audioInConfig = null;
-    // speech.speechConfig.close();
-    // speech.speechConfig = null;
   },
-  synthesize: async (text, rate = 1.5, close = false) => {
+  addToQueue: (text, rate = 1.5) => {
+    speech.queue.push(text);
+    if (speech.queue.length === 1 && !speech.playing) {
+      speech.playing = true;
+      speech.synthesize(speech.queue.shift(), rate);
+    }
+  },
+  synthesize: async (text, rate = 1.5) => {
+    speech.player = new speechsdk.SpeakerAudioDestination();
+    speech.player.onAudioEnd = function (_) {
+      if (speech.queue.length > 0) {
+        speech.synthesize(speech.queue.shift(), rate);
+      } else {
+        speech.playing = false;
+      }
+    };
+    speech.audioOutConfig = speechsdk.AudioConfig.fromSpeakerOutput(
+      speech.player
+    );
+
+    speech.synthesizer = new speechsdk.SpeechSynthesizer(
+      speech.speechConfig,
+      speech.audioOutConfig
+    );
+
     await speech.synthesizer.speakSsmlAsync(
       speech.createSsml(text, rate),
       (result) => {
         if (result) {
-          if (close) {
-            speech.synthesizer.close();
-            speech.synthesizer = null;
-            // speech.audioOutConfig.close();
-            // speech.audioOutConfig = null;
-          }
+          speech.synthesizer.close();
           return result.audioData;
         }
       },
       (error) => {
         console.log(error);
         speech.synthesizer.close();
-        speech.synthesizer = null;
-        // speech.audioOutConfig.close();
-        // speech.audioOutConfig = null;
       }
     );
   },
@@ -169,7 +175,7 @@ export const speech = {
 export async function sttFromMic() {
   startSTT = !startSTT;
   if (!startSTT) {
-    speech.synthesize("Voice ended.", 1.5, false);
+    speech.addToQueue("Voice ended.");
     commandTree.reset();
     await speech.stop();
     if (timerOn) clearTimeout(sttTimer);
@@ -188,27 +194,25 @@ export async function sttFromMic() {
 
 export async function startPage() {
   if (startSTT) {
-    speech.synthesize("You are now on");
+    speech.addToQueue("You are now on");
     const route = window.location.href.replace(baseURL, "");
-    console.log(window.location.href);
-    console.log(route);
     switch (route) {
       case "1":
-        speech.synthesize("Recieve Products Page.");
+        speech.addToQueue("Recieve Products Page.");
         break;
       case "2":
-        speech.synthesize("Verification Page.");
+        speech.addToQueue("Verification Page.");
         startVerification();
         break;
       case "3":
-        speech.synthesize("Product Inspection Page.");
+        speech.addToQueue("Product Inspection Page.");
         startInspection();
         break;
       case "command-list":
-        speech.synthesize("Command List Page");
+        speech.addToQueue("Command List Page");
         break;
       default:
-        speech.synthesize("Home Page.");
+        speech.addToQueue("Home Page.");
         break;
     }
   }
@@ -221,7 +225,7 @@ export function controlVoice(cmd) {
       clearTimeout(sttTimer);
       sttTimer = setTimeout(sttFromMic, sttInterval);
     }
-    speech.synthesize("Voice paused");
+    speech.addToQueue("Voice paused");
     return false;
   }
   if (cmd.toLowerCase().includes("resume")) {
@@ -230,7 +234,7 @@ export function controlVoice(cmd) {
       clearTimeout(sttTimer);
       sttTimer = setTimeout(sttFromMic, sttInterval);
     }
-    speech.synthesize("Voice resumed");
+    speech.addToQueue("Voice resumed");
     return false;
   }
   if (cmd.toLowerCase().includes("stop")) {
