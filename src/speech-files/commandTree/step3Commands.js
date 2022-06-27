@@ -17,15 +17,14 @@ const weight = ["weight", "weights", "wait"];
 const condition = ["condition", "conditions"];
 const missSome = ["some", "few"];
 const missMost = ["most", "all"];
-const dmgTop = ["top", "front", "corner", "sides"];
+const dmgTop = ["top", "front", "corner", "corners", "sides", "side"];
 const dmgBot = ["bottom", "back"];
-const dmgInt = ["interior"];
+const dmgInt = ["interior", "inside"];
 const visible = ["clearly visible", "visible", "clear"];
 const hidden = ["hidden"];
-const minor = ["minor"];
+const minor = ["minor", "miner"];
 const moderate = ["moderate"];
 const considerable = ["considerable"];
-const dmgReport = ["report damage"];
 // location
 const location = ["location"];
 const areas = ["Receiving", "receiving"];
@@ -60,6 +59,9 @@ const sections = {
   },
   dimensions: {
     prompt: ".isdims",
+    redo: false,
+    yes: "yes",
+    no: "no",
   },
   condition: {
     new: ".cond.new",
@@ -70,6 +72,11 @@ const sections = {
   damaged: {
     missParts: "missParts",
     dmgImg: "dmgImg",
+    addDmg: {
+      add: false,
+      yes: "yes",
+      no: "no",
+    },
   },
   missParts: {
     no: ".no_miss",
@@ -93,7 +100,7 @@ const sections = {
       checkbox: ".bot._dmg",
       vis: {
         clearlyVis: ".bot_dmg_vis_cv",
-        hidden: ".botp_dmg_vis_h",
+        hidden: ".bot_dmg_vis_h",
         sev: {
           minor: ".bot_dmg_sev_min",
           moderate: ".bot_dmg_sev_mod",
@@ -137,125 +144,153 @@ export async function startInspection() {
   switch (currentSection) {
     case null:
       currentSection = sections.ogpack;
-      await speech.synthesize($(currentSection.prompt).innerHTML);
-      await speech.synthesize("Answer with: yes or no.");
+      speech.synthesize($(currentSection.prompt).innerHTML);
+      speech.synthesize("Waiting ...");
       break;
     case sections.ogpack:
       currentSection = sections.reship;
-      await speech.synthesize($(currentSection.prompt).innerHTML);
-      await speech.synthesize("Answer with: yes or no.");
+      speech.synthesize($(currentSection.prompt).innerHTML);
+      speech.synthesize("Waiting ...");
       break;
     case sections.reship:
       currentSection = sections.dimensions;
-      await speech.synthesize($(currentSection.prompt).innerHTML);
-      await speech.synthesize(
-        "To change the dimensions of the box or product, please say"
-      );
-      await speech.synthesize("Weight: then say the weight. And");
-      await speech.synthesize("Dimensions: then say the dimensions.");
-      if ($(".box.w").value !== "") {
+      speech.synthesize($(currentSection.prompt).innerHTML);
+      if ($(".box.w").value !== "" && !currentSection.redo) {
         let weight = $(".box_label.w").innerHTML + $(".box.w").value + "lbs.";
-        let length = $(".box_label.l").innerHTML + $(".box.l").value + "in.";
-        let depth = $(".box_label.d").innerHTML + $(".box.d").value + "in.";
-        let height = $(".box_label.h").innerHTML + $(".box.h").value + "in.";
-        await speech.synthesize(weight);
-        await speech.synthesize(length);
-        await speech.synthesize(depth);
-        await speech.synthesize(height);
-        await speech.synthesize(
-          "If the stated dimensions were correct, say: next section."
+        let dimensions =
+          `Dimensions: ${$(".box.l").value} by ` +
+          `${$(".box.d").value} by ${$(".box.h").value}`;
+        speech.synthesize(weight);
+        speech.synthesize(dimensions);
+        speech.synthesize("Are these dimensions correct?");
+      } else {
+        speech.synthesize(
+          "To change the dimensions of the box or product, please say"
         );
+        speech.synthesize("Weight: then say the weight. And/Or");
+        speech.synthesize("Dimensions: then say the dimensions.");
       }
       break;
     case sections.dimensions:
       currentSection = sections.condition;
-      await speech.synthesize("When you are ready, please say");
-      await speech.synthesize("Condition: then say the condition");
+      speech.synthesize("When you are ready, please say");
+      speech.synthesize("Condition: then say the condition");
       break;
     case sections.damaged.missParts:
       currentSection = sections.missParts;
-      await speech.synthesize("Is the product missing parts?");
-      await speech.synthesize("Answer with: no, some, or most.");
+      speech.synthesize("Is the product missing parts?");
+      speech.synthesize("Answer with: no, some, or most.");
       break;
     case sections.missParts:
       currentSection = sections.whrDmg;
-      await speech.synthesize("Where is the damage?");
-      await speech.synthesize("Answer with: top, front, corner, sides");
-      await speech.synthesize("or bottom or back");
-      await speech.synthesize("or interior");
+      speech.synthesize("Where is the damage?");
+      speech.synthesize("Answer with:");
+      if (!$(".top._dmg").checked)
+        speech.synthesize("top, front, corner, or sides");
+      if (!$(".bot._dmg").checked) speech.synthesize("bottom or back");
+      if (!$(".int._dmg").checked) speech.synthesize("interior");
       break;
     case sections.whrDmg.top:
     case sections.whrDmg.bottom:
     case sections.whrDmg.interior:
       currentSection = currentSection.vis;
-      await speech.synthesize("How visible is the damage?");
-      await speech.synthesize("Answer with: clearly visible, or hidden");
+      speech.synthesize("How visible is the damage?");
+      speech.synthesize("Answer with: clearly visible, or hidden");
       break;
     case sections.whrDmg.top.vis:
     case sections.whrDmg.bottom.vis:
     case sections.whrDmg.interior.vis:
       currentSection = currentSection.sev;
-      await speech.synthesize("How severe is the damage?");
-      await speech.synthesize("Answer with: minor, moderate, or considerable");
+      speech.synthesize("How severe is the damage?");
+      speech.synthesize("Answer with: minor, moderate, or considerable");
       break;
     case sections.whrDmg.top.vis.sev:
     case sections.whrDmg.bottom.vis.sev:
     case sections.whrDmg.interior.vis.sev:
-      currentSection = sections.damaged.dmgImg;
-      await speech.synthesize(
-        "If you are done reporting damage say: next section"
-      );
-      await speech.synthesize(
-        "If you need to report more damage say: report damage"
-      );
+      if (
+        !$(".top._dmg").checked ||
+        !$(".bot._dmg").checked ||
+        !$(".int._dmg").checked
+      ) {
+        currentSection = sections.damaged.addDmg;
+        speech.synthesize("Is there ");
+        speech.synthesize("any additional damage?");
+      } else {
+        currentSection = sections.damaged.dmgImg;
+        startInspection();
+      }
       break;
     case sections.damaged.dmgImg:
       currentSection = sections.dmgImg;
-      await speech.synthesize(
+      speech.synthesize(
         "Please use your computer to add a picture of the damage"
       );
       startInspection();
       break;
     case sections.dmgImg:
       currentSection = sections.location;
-      await speech.synthesize(
+      speech.synthesize(
         "If you would like to add notes, please say: 'Add Notes', then say the note"
       );
-      await speech.synthesize("To stop adding notes, say: 'End Notes'.");
-      await speech.synthesize("Or, move on by saying 'Next Section'.");
+      speech.synthesize("To stop adding notes, say: 'End Notes'.");
+      speech.synthesize("Or, move on by saying 'Next Section'.");
       break;
     default:
-      await speech.synthesize("Please say 'Location'.");
-      await speech.synthesize("then say the location for the product.");
+      speech.synthesize("Please say 'Location'.");
+      speech.synthesize("then say the location for the product.");
       break;
   }
 }
 
 root.addGroup(root, verify, function (e) {
   if (currentSection.yes !== undefined) {
-    $(currentSection.yes).click();
+    switch (currentSection) {
+      case sections.dimensions:
+        currentSection.redo = false;
+        break;
+      case sections.damaged.addDmg:
+        currentSection.add = true;
+        currentSection = sections.missParts;
+        break;
+      default:
+        $(currentSection.yes).click();
+        break;
+    }
     startInspection();
   }
+  return false;
 });
 
 root.addGroup(root, unverify, function (e) {
   if (currentSection.no !== undefined) {
-    $(currentSection.no).click();
     switch (currentSection) {
       case sections.ogpack:
         $(".box.w").value = "";
         $(".box.l").value = "";
         $(".box.d").value = "";
         $(".box.h").value = "";
+        sections.dimensions.redo = true;
+        $(currentSection.no).click();
         break;
       case sections.reship:
         $(".isdims").innerHTML = "Product Dimensions and Weights";
+        $(currentSection.no).click();
+        break;
+      case sections.dimensions:
+        currentSection.redo = true;
+        currentSection = sections.reship;
+        break;
+      case sections.damaged.addDmg:
+        currentSection.add = false;
+        currentSection = sections.damaged.dmgImg;
         break;
       default:
+        $(currentSection.no).click();
         break;
     }
     startInspection();
   }
+  return false;
 });
 
 root.addGroup(root, missSome, function (e) {
@@ -263,6 +298,7 @@ root.addGroup(root, missSome, function (e) {
     $(currentSection.some).click();
     startInspection();
   }
+  return false;
 });
 
 root.addGroup(root, missMost, function (e) {
@@ -270,10 +306,11 @@ root.addGroup(root, missMost, function (e) {
     $(currentSection.most).click();
     startInspection();
   }
+  return false;
 });
 
 root.addGroup(root, correctDims, function (e) {
-  if (currentSection !== sections.dimensions) {
+  if (currentSection !== sections.dimensions || !currentSection.redo) {
     return false;
   }
   if (
@@ -350,24 +387,42 @@ root.addGroup(root, condition, function (e) {
 
 root.addGroup(root, dmgTop, function (e) {
   if (currentSection.top !== undefined) {
-    $(currentSection.top.checkbox).click();
-    currentSection = currentSection.top;
-    startInspection();
+    if (!$(currentSection.top.checkbox).checked) {
+      $(currentSection.top.checkbox).click();
+      currentSection = currentSection.top;
+      startInspection();
+    } else {
+      speech.synthesize("Damaged top, front, corner, or sides");
+      speech.synthesize("has already been chosen");
+    }
   }
+  return false;
 });
 root.addGroup(root, dmgBot, function (e) {
   if (currentSection.bottom !== undefined) {
-    $(currentSection.bottom.checkbox).click();
-    currentSection = currentSection.bottom;
-    startInspection();
+    if (!$(currentSection.bottom.checkbox).checked) {
+      $(currentSection.bottom.checkbox).click();
+      currentSection = currentSection.bottom;
+      startInspection();
+    } else {
+      speech.synthesize("Damaged bottom or back");
+      speech.synthesize("has already been chosen");
+    }
   }
+  return false;
 });
 root.addGroup(root, dmgInt, function (e) {
   if (currentSection.interior !== undefined) {
-    $(currentSection.interior.checkbox).click();
-    currentSection = currentSection.interior;
-    startInspection();
+    if (!$(currentSection.interior.checkbox).checked) {
+      $(currentSection.interior.checkbox).click();
+      currentSection = currentSection.interior;
+      startInspection();
+    } else {
+      speech.synthesize("Damaged interior");
+      speech.synthesize("has already been chosen");
+    }
   }
+  return false;
 });
 
 root.addGroup(root, visible, function (e) {
@@ -375,12 +430,14 @@ root.addGroup(root, visible, function (e) {
     $(currentSection.clearlyVis).click();
     startInspection();
   }
+  return false;
 });
 root.addGroup(root, hidden, function (e) {
   if (currentSection.hidden !== undefined) {
     $(currentSection.hidden).click();
     startInspection();
   }
+  return false;
 });
 
 root.addGroup(root, minor, function (e) {
@@ -388,29 +445,26 @@ root.addGroup(root, minor, function (e) {
     $(currentSection.minor).click();
     startInspection();
   }
+  return false;
 });
 root.addGroup(root, moderate, function (e) {
   if (currentSection.moderate !== undefined) {
     $(currentSection.moderate).click();
     startInspection();
   }
+  return false;
 });
 root.addGroup(root, considerable, function (e) {
   if (currentSection.considerable !== undefined) {
     $(currentSection.considerable).click();
     startInspection();
   }
-});
-
-root.addGroup(root, dmgReport, function (e) {
-  if (currentSection === sections.damaged.trash) {
-    currentSection = sections.missParts;
-    startInspection();
-  }
+  return false;
 });
 
 root.addGroup(root, nextSection, function (e) {
   startInspection();
+  return false;
 });
 
 root.addGroup(root, addNotes, function (e) {
@@ -427,37 +481,48 @@ root.addGroup(root, addNotes, function (e) {
     }
   });
 
+  if (!continueDamage) startInspection();
+
   return continueDamage;
 });
 
 root.addGroup(root, location, function (e) {
-  // if (currentSection === sections.location) {
-  currentSection = sections.location;
-  console.log("location");
-  if (e === "") return true;
-  if (
-    $(currentSection.area).value === "" &&
-    (/^[0-9]{3}$/.test(e) || areas.includes(e))
-  ) {
-    console.log("area");
-    $(currentSection.area).value = e;
-    return true;
-  } else if ($(currentSection.zone).value === "" && /[ABCU]/.test(e)) {
-    console.log("zone loc");
-    $(currentSection.zone).value = /[ABCU]/.exec(e)[0];
-    $(currentSection.loc).value = "0003";
-    return false;
-  } else {
-    console.log("pallet");
-    $(currentSection.pallet).value = e;
-    return false;
+  if (currentSection === sections.location) {
+    currentSection = sections.location;
+    if (e === "") return true;
+    if (
+      $(currentSection.area).value === "" &&
+      $(currentSection.zone).value === "" &&
+      $(currentSection.loc).value === "" &&
+      /^[0-9]{3}[ABCU][0-9]{1,4}(\.)?$/.test(e)
+    ) {
+      $(currentSection.area).value = /^[0-9]{3}/.exec(e)[0];
+      $(currentSection.zone).value = /[ABCU]/.exec(e)[0];
+      let loc = "000" + /[0-9]{1,4}(\.)?$/.exec(e)[0].replace(".", "");
+      $(currentSection.loc).value = loc.substring(loc.length - 4);
+      return false;
+    } else if (
+      $(currentSection.area).value === "" &&
+      (/^[0-9]{3}$/.test(e) || areas.includes(e))
+    ) {
+      $(currentSection.area).value = e;
+      return true;
+    } else if ($(currentSection.zone).value === "" && /[ABCU]/.test(e)) {
+      $(currentSection.zone).value = /[ABCU]/.exec(e)[0];
+      $(currentSection.loc).value = "0003";
+      return false;
+    } else {
+      console.log("pallet");
+      $(currentSection.pallet).value = e;
+      return false;
+    }
   }
-  // }
 });
 
 root.addGroup(root, prevPage, function (e) {
   currentSection = null;
   $(".prevpage").click();
+  return false;
 });
 
 root.addGroup(root, control, controlVoice);
