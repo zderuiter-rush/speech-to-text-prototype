@@ -45,7 +45,7 @@ export default function HashTableNode() {
       }
       if (startCommand || keys.length === 1) {
         if (
-          this.content[keys[0]] === undefined &&
+          this.content[keys[0]] === undefined ||
           this.content[keys[0]]["cmd"] === undefined
         ) {
           return null;

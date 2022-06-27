@@ -7,8 +7,8 @@ const speechsdk = require("microsoft-cognitiveservices-speech-sdk");
 const { wordsToNumbers } = require("words-to-numbers");
 
 const $ = (s, o = document) => o.querySelector(s);
-// const baseURL = "http://localhost:3000/";
-const baseURL = "https://sheltered-plateau-09726.herokuapp.com/";
+const baseURL = "http://localhost:3000/";
+// const baseURL = "https://sheltered-plateau-09726.herokuapp.com/";
 
 // Speech to text setup
 var startSTT = false;
@@ -31,14 +31,18 @@ export const commandTree = {
     }
   },
   handleRecognizedSpeech: (key) => {
+    if (commandTree.root === null || key === "") {
+      return;
+    }
     commandTree.command = commandTree.root.getCommand(
       commandTree.root.formatKey(key),
       ""
     );
 
     if (
-      !speech.paused ||
-      (speech.paused && commandTree.command["txt"] === "control voice")
+      (!speech.paused ||
+        (speech.paused && commandTree.command["txt"] === "control voice")) &&
+      commandTree.command !== null
     ) {
       let keys = null;
       if (commandTree.command["txt"] !== "") {
@@ -59,7 +63,7 @@ export const commandTree = {
         }
       }
 
-      if (commandTree.command[0] !== null) {
+      if (commandTree.command["cmd"] !== null) {
         commandTree.root.setKeepCommand(commandTree.command["cmd"](keys[0]));
       }
       commandTree.root.doCommand(
@@ -165,7 +169,7 @@ export const speech = {
 export async function sttFromMic() {
   startSTT = !startSTT;
   if (!startSTT) {
-    await speech.synthesize("Voice ended.", 1.5, false);
+    speech.synthesize("Voice ended.", 1.5, false);
     commandTree.reset();
     await speech.stop();
     if (timerOn) clearTimeout(sttTimer);
@@ -184,25 +188,25 @@ export async function sttFromMic() {
 
 export async function startPage() {
   if (startSTT) {
-    await speech.synthesize("You are now on");
+    speech.synthesize("You are now on");
     const route = window.location.href.replace(baseURL, "");
     switch (route) {
       case "1":
-        await speech.synthesize("Recieve Products Page.");
+        speech.synthesize("Recieve Products Page.");
         break;
       case "2":
-        await speech.synthesize("Verification Page.");
+        speech.synthesize("Verification Page.");
         startVerification();
         break;
       case "3":
-        await speech.synthesize("Product Inspection Page.");
+        speech.synthesize("Product Inspection Page.");
         startInspection();
         break;
       case "command-list":
-        await speech.synthesize("Command List Page");
+        speech.synthesize("Command List Page");
         break;
       default:
-        await speech.synthesize("Home Page.");
+        speech.synthesize("Home Page.");
         break;
     }
   }
