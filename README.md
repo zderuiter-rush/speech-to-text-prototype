@@ -49,8 +49,10 @@
 
   - **End Note(s):** this command will stop adding what you say to the Notes field
 
-- Uses a data structure that works similar to a nested hashmap:
+## Data Structure
+
+- Uses a decision tree that works with a nested hashmap:
   - Adding to the data structure:
     - Can either add a word or word group at a time, if it is a word group, then all the words in the group will perform the same function
-  - Function:
-    - When adding commands, a function is also specified that the command will perform
+    - Function:
+      - When adding commands, a function is also specified that the command will perform when voiced
