@@ -115,7 +115,7 @@ export function startVerification() {
       : voice;
   const verb = currentSection === sections.dimensions ? "are" : "is";
   speech.addToQueue(
-    "The" + voice.split(" ")[0] + verb + voice.split(" ").slice(1).join(" ")
+    `The ${voice.split(" ")[0]} ${verb}: ${voice.split(" ").slice(1).join(" ")}`
   );
 }
 

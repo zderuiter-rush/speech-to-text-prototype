@@ -6,6 +6,20 @@
     overflow-y: auto;
     display: flex;
 
+    a {
+        text-decoration: none;
+        color: beige;
+        transition: all 0.3s ease;
+
+        &:hover {
+            color:rgb(202, 202, 181);
+        }
+
+        &:focus {
+            color:cornflowerblue;
+        }
+    }
+
     .commands {
         position: relative;
         transition: all 1s ease;

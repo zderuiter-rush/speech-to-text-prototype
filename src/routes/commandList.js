@@ -53,9 +53,15 @@ export default class CommandList extends Component {
             </tbody>
           </table>
 
-          <h6>
-            <i>Click the titles to toggle expanding the commands...</i>
-          </h6>
+          <h5>
+            <a
+              href="https://github.com/zderuiter-rush/speech-to-text-prototype"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <i>Click here to see full list of commands and documentation</i>
+            </a>
+          </h5>
           <div className="container">
             <h2 className="title">Every Page Commands</h2>
             <ul className="commands">

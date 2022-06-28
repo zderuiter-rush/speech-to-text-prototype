@@ -214,7 +214,7 @@ export async function startInspection() {
         !$(".int._dmg").checked
       ) {
         currentSection = sections.damaged.addDmg;
-        speech.addToQueue("Is there any additional damage?");
+        speech.addToQueue("Is there additional damage?");
       } else {
         currentSection = sections.damaged.dmgImg;
         startInspection();

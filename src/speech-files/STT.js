@@ -7,8 +7,8 @@ const speechsdk = require("microsoft-cognitiveservices-speech-sdk");
 const { wordsToNumbers } = require("words-to-numbers");
 
 const $ = (s, o = document) => o.querySelector(s);
-// const baseURL = "http://localhost:3000/";
-const baseURL = "https://sheltered-plateau-09726.herokuapp.com/";
+const baseURL = "http://localhost:3000/";
+// const baseURL = "https://sheltered-plateau-09726.herokuapp.com/";
 
 // Speech to text setup
 var startSTT = false;
@@ -81,18 +81,18 @@ export const speech = {
   recognizer: null,
   synthesizer: null,
   paused: false,
-  queue: [],
+  textQueue: [],
+  rateQueue: [],
   player: null,
   playing: false,
-  initialize: (key, region) => {
+  initialize: async (key, region) => {
     speech.speechConfig = speechsdk.SpeechConfig.fromSubscription(key, region);
     speech.audioInConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
     speech.recognizer = new speechsdk.SpeechRecognizer(speech.speechConfig);
-  },
-  start: async () => {
     speech.recognizer.recognized = speech.recognized;
     speech.recognizer.recognizing = speech.recognizing;
     speech.recognizer.canceled = speech.canceled;
+
     await speech.recognizer.startContinuousRecognitionAsync();
     $(".speechtext").innerHTML = "Start talking and it will appear here!";
   },
@@ -102,7 +102,7 @@ export const speech = {
     } else {
       $(".speechtext").innerHTML = e.result.text;
       if (timerOn && !speech.paused && startSTT) {
-        sttTimer = setTimeout(sttFromMic, sttInterval);
+        sttTimer = setTimeout(voiceTimeout, sttInterval);
       }
       commandTree.handleRecognizedSpeech(e.result.text);
     }
@@ -123,17 +123,23 @@ export const speech = {
     speech.recognizer.close();
   },
   addToQueue: (text, rate = 1.5) => {
-    speech.queue.push(text);
-    if (speech.queue.length === 1 && !speech.playing) {
+    speech.textQueue.push(text);
+    speech.rateQueue.push(rate);
+    if (
+      speech.textQueue.length === 1 &&
+      speech.rateQueue.length === 1 &&
+      !speech.playing
+    ) {
       speech.playing = true;
-      speech.synthesize(speech.queue.shift(), rate);
+      speech.synthesize(speech.textQueue.shift(), speech.rateQueue.shift());
     }
   },
   synthesize: async (text, rate = 1.5) => {
     speech.player = new speechsdk.SpeakerAudioDestination();
     speech.player.onAudioEnd = function (_) {
-      if (speech.queue.length > 0) {
-        speech.synthesize(speech.queue.shift(), rate);
+      speech.player.close();
+      if (speech.textQueue.length > 0 && speech.rateQueue.length > 0) {
+        speech.synthesize(speech.textQueue.shift(), speech.rateQueue.shift());
       } else {
         speech.playing = false;
       }
@@ -172,6 +178,12 @@ export const speech = {
   },
 };
 
+function voiceTimeout() {
+  speech.addToQueue("Are you still there?");
+  clearTimeout(sttTimer);
+  sttTimer = setTimeout(sttFromMic, 15000);
+}
+
 export async function sttFromMic() {
   startSTT = !startSTT;
   if (!startSTT) {
@@ -184,17 +196,15 @@ export async function sttFromMic() {
 
   const cred = await getCredentials();
 
-  speech.initialize(cred.key, cred.region);
-  await speech.start();
+  await speech.initialize(cred.key, cred.region);
 
-  if (timerOn) sttTimer = setTimeout(sttFromMic, sttInterval);
+  if (timerOn) sttTimer = setTimeout(voiceTimeout, sttInterval);
 
   startPage();
 }
 
 export async function startPage() {
   if (startSTT) {
-    speech.addToQueue("You are now on");
     const route = window.location.href.replace(baseURL, "");
     switch (route) {
       case "1":
@@ -223,7 +233,7 @@ export function controlVoice(cmd) {
     speech.paused = true;
     if (timerOn) {
       clearTimeout(sttTimer);
-      sttTimer = setTimeout(sttFromMic, sttInterval);
+      sttTimer = setTimeout(voiceTimeout, sttInterval);
     }
     speech.addToQueue("Voice paused");
     return false;
@@ -232,7 +242,7 @@ export function controlVoice(cmd) {
     speech.paused = false;
     if (timerOn) {
       clearTimeout(sttTimer);
-      sttTimer = setTimeout(sttFromMic, sttInterval);
+      sttTimer = setTimeout(voiceTimeout, sttInterval);
     }
     speech.addToQueue("Voice resumed");
     return false;
@@ -248,6 +258,6 @@ export function timer(on) {
   timerOn = on;
   clearTimeout(sttTimer);
   if (on) {
-    sttTimer = setTimeout(sttFromMic, sttInterval);
+    sttTimer = setTimeout(voiceTimeout, sttInterval);
   }
 }
