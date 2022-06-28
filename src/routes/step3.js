@@ -341,12 +341,30 @@ export default class Step3 extends Component {
                   <div>Place to add image...</div>
                   <div>But not really...</div>
                 </div>
-                <br />
               </td>
             </tr>
 
             <tr>
               <td>
+                <h2 className="are_inst_incl">
+                  Are there printed assembly instructions included with this
+                  product?
+                </h2>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input type="radio" className="yes_instr" name="assem_instr" />
+                <label htmlFor="pc_correct">Yes</label>
+                <input type="radio" className="no_instr" name="assem_instr" />
+                <label htmlFor="pc_incorrect">No</label>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <br />
+                <br />
                 <label htmlFor="add_notes">Add Notes:</label>
                 <div>
                   <textarea className="add_notes"></textarea>

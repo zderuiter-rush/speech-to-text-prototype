@@ -1,6 +1,5 @@
 import HashTableNode from "./commandTree";
-import { speech } from "../STT";
-import { controlVoice } from "../STT";
+import { speech, controlVoice, resetPhrases } from "../STT";
 
 const $ = (s, o = document) => o.querySelector(s);
 const $$ = (s, o = document) => o.querySelectorAll(s);
@@ -73,6 +72,14 @@ export const root = new HashTableNode();
 export function startVerification() {
   switch (currentSection) {
     case null:
+      resetPhrases([
+        checkAll,
+        verify,
+        unverify,
+        correctDims,
+        addNotes,
+        endNotes,
+      ]);
       currentSection = sections.category;
       break;
     case sections.category:

@@ -79,6 +79,7 @@ export const speech = {
   audioInConfig: null,
   audioOutConfig: null,
   recognizer: null,
+  phraseList: null,
   synthesizer: null,
   paused: false,
   textQueue: [],
@@ -89,6 +90,9 @@ export const speech = {
     speech.speechConfig = speechsdk.SpeechConfig.fromSubscription(key, region);
     speech.audioInConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
     speech.recognizer = new speechsdk.SpeechRecognizer(speech.speechConfig);
+    speech.phraseList = speechsdk.PhraseListGrammar.fromRecognizer(
+      speech.recognizer
+    );
     speech.recognizer.recognized = speech.recognized;
     speech.recognizer.recognizing = speech.recognizing;
     speech.recognizer.canceled = speech.canceled;
@@ -260,4 +264,11 @@ export function timer(on) {
   if (on) {
     sttTimer = setTimeout(voiceTimeout, sttInterval);
   }
+}
+
+export function resetPhrases(lists) {
+  speech.phraseList.clear();
+  lists.forEach(function (phrases) {
+    speech.phraseList.addPhrases(phrases);
+  });
 }

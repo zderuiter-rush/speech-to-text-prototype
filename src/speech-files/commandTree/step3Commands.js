@@ -1,6 +1,5 @@
 import HashTableNode from "./commandTree";
-import { speech } from "../STT";
-import { controlVoice } from "../STT";
+import { speech, controlVoice, resetPhrases } from "../STT";
 
 const $ = (s, o = document) => o.querySelector(s);
 
@@ -122,6 +121,11 @@ const sections = {
     },
   },
   dmgImg: {},
+  assemInstr: {
+    promt: ".are_inst_incl",
+    yes: ".yes_instr",
+    no: ".no_instr",
+  },
   location: {
     area: ".l_area",
     zone: ".l_zone",
@@ -143,6 +147,27 @@ export const root = new HashTableNode();
 export async function startInspection() {
   switch (currentSection) {
     case null:
+      resetPhrases([
+        verify,
+        unverify,
+        correctDims,
+        weight,
+        condition,
+        missSome,
+        missMost,
+        dmgTop,
+        dmgBot,
+        dmgInt,
+        visible,
+        hidden,
+        minor,
+        moderate,
+        considerable,
+        location,
+        nextSection,
+        addNotes,
+        endNotes,
+      ]);
       currentSection = sections.ogpack;
       speech.addToQueue($(currentSection.prompt).innerHTML);
       break;
@@ -228,6 +253,10 @@ export async function startInspection() {
       startInspection();
       break;
     case sections.dmgImg:
+      currentSection = sections.assemInstr;
+      speech.addToQueue($(currentSection.promt).innerHTML);
+      break;
+    case sections.assemInstr:
       currentSection = sections.location;
       speech.addToQueue(
         "If you would like to add notes, please say: 'Add Notes', then say the note... " +
