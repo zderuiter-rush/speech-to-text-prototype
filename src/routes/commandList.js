@@ -109,6 +109,10 @@ export default class CommandList extends Component {
                     <strong>End Note(s):</strong> this command will stop adding
                     what you say to the Notes field
                   </li>
+                  <li>
+                    <strong>Clear Note(s):</strong> this command will clear the
+                    text field
+                  </li>
                 </ul>
               </li>
             </ul>
@@ -151,6 +155,10 @@ export default class CommandList extends Component {
                   <li>
                     <strong>End Note(s):</strong> this command will stop adding
                     what you say to the Notes field
+                  </li>
+                  <li>
+                    <strong>Clear Note(s):</strong> this command will clear the
+                    text field
                   </li>
                 </ul>
               </li>
@@ -216,6 +224,10 @@ export default class CommandList extends Component {
                   <li>
                     <strong>End Note(s):</strong> this command will stop adding
                     what you say to the Notes field
+                  </li>
+                  <li>
+                    <strong>Clear Note(s):</strong> this command will clear the
+                    text field
                   </li>
                 </ul>
               </li>

@@ -126,21 +126,21 @@ export default class Step3 extends Component {
             <tr>
               <td>
                 <label className="box_label l">Longest Side: </label>
-                <input type="text" className="box dim l" defaultValue="20" />
+                <input type="text" className="box l" defaultValue="20" />
                 <label className="box_length label">in.</label>
               </td>
             </tr>
             <tr>
               <td>
                 <label className="box_label d">2nd Longest Side: </label>
-                <input type="text" className="box dim d" defaultValue="20" />
+                <input type="text" className="box d" defaultValue="20" />
                 <label className="box_depth label">in.</label>
               </td>
             </tr>
             <tr>
               <td>
                 <label className="box_label h">Shortest Side: </label>
-                <input type="text" className="box dim h" defaultValue="20" />
+                <input type="text" className="box h" defaultValue="20" />
                 <label className="box_height label">in.</label>
               </td>
             </tr>

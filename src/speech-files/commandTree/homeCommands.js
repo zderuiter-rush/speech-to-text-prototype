@@ -11,14 +11,9 @@ const length = ["length", "long"];
 const depth = ["depth", "width", "wide"];
 const height = ["height", "high"];
 // Damages
-const addDamage = ["add damage", "added damage", "add note", "added note"];
-const endDamage = [
-  "end note",
-  "end of damage",
-  "ended damage",
-  "add of damage",
-  "and of damage",
-];
+const addDamage = ["add notes", "added notes`", "add note", "added note"];
+const endDamage = ["end note", "and note", "end notes", "and notes"];
+const clearNotes = ["clear note", "clear notes"];
 // navigate pages
 const nextPage = ["next page"];
 const prevPage = ["last page", "previous page"];
@@ -75,6 +70,12 @@ root.addGroup(root, addDamage, function (e) {
         $(".damagedetails").value.toLowerCase().indexOf(cmd)
       );
       continueDamage = false;
+    }
+  });
+
+  clearNotes.forEach(function (cmd) {
+    if ($(".damagedetails").value.toLowerCase().includes(cmd)) {
+      $(".damagedetails").value = "";
     }
   });
 

@@ -12,6 +12,9 @@ const unverify = ["no", "incorrect", "wrong"];
 // correct the dimensions
 const correctDims = ["dimensions", "dimension"];
 const weight = ["weight", "weights", "wait"];
+const length = ["length", "long"];
+const depth = ["depth", "width", "wide"];
+const height = ["height", "high"];
 // condition
 const condition = ["condition", "conditions"];
 const missSome = ["some", "few"];
@@ -26,19 +29,13 @@ const moderate = ["moderate"];
 const considerable = ["considerable"];
 // location
 const location = ["location"];
-const areas = ["Receiving", "receiving"];
+// const areas = ["Receiving", "receiving"];
 // navigate sections
 const nextSection = ["next section"];
 // add notes
 const addNotes = ["add notes", "added notes", "add note", "added note"];
-const endNotes = [
-  "end note",
-  "end notes",
-  "and note",
-  "and notes",
-  "stop note",
-  "stop notes",
-];
+const endNotes = ["end note", "end notes", "and note", "and notes"];
+const clearNotes = ["clear note", "clear notes"];
 // navigate pages
 const prevPage = ["last page", "previous page"];
 // control voice
@@ -59,6 +56,7 @@ const sections = {
   dimensions: {
     prompt: ".isdims",
     redo: false,
+    type: "box",
     yes: "yes",
     no: "no",
   },
@@ -177,8 +175,8 @@ export async function startInspection() {
       break;
     case sections.reship:
       currentSection = sections.dimensions;
-      speech.addToQueue($(currentSection.prompt).innerHTML);
       if ($(".box.w").value !== "" && !currentSection.redo) {
+        speech.addToQueue($(currentSection.prompt).innerHTML);
         let weight = $(".box_label.w").innerHTML + $(".box.w").value + "lbs.";
         let dimensions =
           `Dimensions: ${$(".box.l").value} by ` +
@@ -187,11 +185,14 @@ export async function startInspection() {
           `${weight}... ${dimensions}... Are these dimensions correct?`
         );
       } else {
-        speech.addToQueue(
-          "To change the dimensions of the box or product, please say: " +
-            "Weight: then say the weight. And/Or: " +
-            "Dimensions: then say the dimensions."
-        );
+        let prompt =
+          `To change the dimensions of the ${currentSection.type}, please say: ` +
+          `Weight: then say the weight. And/Or: `;
+        prompt +=
+          currentSection.type === "box"
+            ? `Dimensions: then say the dimensions.`
+            : `Length: then say the length. And Depth: then say the depth. And Height: then say the height`;
+        speech.addToQueue(prompt);
       }
       break;
     case sections.dimensions:
@@ -304,6 +305,10 @@ root.addGroup(root, unverify, function (e) {
         break;
       case sections.reship:
         $(".isdims").innerHTML = "Product Dimensions and Weights";
+        $(".box_label.l").textContent = "Length: ";
+        $(".box_label.d").textContent = "Depth: ";
+        $(".box_label.h").textContent = "Height: ";
+        sections.dimensions.type = "product";
         $(currentSection.no).click();
         break;
       case sections.dimensions:
@@ -340,7 +345,11 @@ root.addGroup(root, missMost, function (e) {
 });
 
 root.addGroup(root, correctDims, function (e) {
-  if (currentSection !== sections.dimensions || !currentSection.redo) {
+  if (
+    currentSection !== sections.dimensions ||
+    !currentSection.redo ||
+    currentSection.type !== "product"
+  ) {
     return false;
   }
   if (
@@ -366,6 +375,57 @@ root.addGroup(root, correctDims, function (e) {
       $(".box.h").dispatchEvent(new Event("change"));
     }
     startInspection();
+    return false;
+  }
+  return true;
+});
+
+root.addGroup(root, length, function (e) {
+  if (
+    currentSection !== sections.dimensions ||
+    !currentSection.redo ||
+    currentSection.type !== "product"
+  ) {
+    return false;
+  }
+  let number = /[0-9]+(\.[0-9]+)?/;
+  if (number.test(e)) {
+    let res = number.exec(e);
+    $(".box.l").value = $(".box.l").innerHTML = res[0];
+    return false;
+  }
+  return true;
+});
+
+root.addGroup(root, depth, function (e) {
+  if (
+    currentSection !== sections.dimensions ||
+    !currentSection.redo ||
+    currentSection.type !== "product"
+  ) {
+    return false;
+  }
+  let number = /[0-9]+(\.[0-9]+)?/;
+  if (number.test(e)) {
+    let res = number.exec(e);
+    $(".box.d").value = $(".box.d").innerHTML = res[0];
+    return false;
+  }
+  return true;
+});
+
+root.addGroup(root, height, function (e) {
+  if (
+    currentSection !== sections.dimensions ||
+    !currentSection.redo ||
+    currentSection.type !== "product"
+  ) {
+    return false;
+  }
+  let number = /[0-9]+(\.[0-9]+)?/;
+  if (number.test(e)) {
+    let res = number.exec(e);
+    $(".box.h").value = $(".box.h").innerHTML = res[0];
     return false;
   }
   return true;
@@ -408,7 +468,7 @@ root.addGroup(root, condition, function (e) {
   if ($(".condChoice").value.toLowerCase().includes("trash")) {
     $(currentSection.trash).click();
     $(".condChoice").value = "";
-    currentSection = sections.damaged.trash;
+    currentSection = sections.damaged.dmgImg;
     startInspection();
     return false;
   }
@@ -510,6 +570,12 @@ root.addGroup(root, addNotes, function (e) {
     }
   });
 
+  clearNotes.forEach(function (cmd) {
+    if ($(".add_notes").value.toLowerCase().includes(cmd)) {
+      $(".add_notes").value = "";
+    }
+  });
+
   if (!continueDamage) startInspection();
 
   return continueDamage;
@@ -523,28 +589,29 @@ root.addGroup(root, location, function (e) {
       $(currentSection.area).value === "" &&
       $(currentSection.zone).value === "" &&
       $(currentSection.loc).value === "" &&
-      /^[0-9]{3}[ABCU][0-9]{1,4}(\.)?$/.test(e)
+      /^[0-9]{3}(\s)?[ABCU](\s)?[0-9]{1,4}(\.)?$/.test(e)
     ) {
       $(currentSection.area).value = /^[0-9]{3}/.exec(e)[0];
       $(currentSection.zone).value = /[ABCU]/.exec(e)[0];
       let loc = "000" + /[0-9]{1,4}(\.)?$/.exec(e)[0].replace(".", "");
       $(currentSection.loc).value = loc.substring(loc.length - 4);
       return false;
-    } else if (
-      $(currentSection.area).value === "" &&
-      (/^[0-9]{3}$/.test(e) || areas.includes(e))
-    ) {
-      $(currentSection.area).value = e;
-      return true;
-    } else if ($(currentSection.zone).value === "" && /[ABCU]/.test(e)) {
-      $(currentSection.zone).value = /[ABCU]/.exec(e)[0];
-      $(currentSection.loc).value = "0003";
-      return false;
-    } else {
-      console.log("pallet");
-      $(currentSection.pallet).value = e;
-      return false;
     }
+    // else if (
+    //   $(currentSection.area).value === "" &&
+    //   (/^[0-9]{3}$/.test(e) || areas.includes(e))
+    // ) {
+    //   $(currentSection.area).value = e;
+    //   return true;
+    // } else if ($(currentSection.zone).value === "" && /[ABCU]/.test(e)) {
+    //   $(currentSection.zone).value = /[ABCU]/.exec(e)[0];
+    //   $(currentSection.loc).value = "0003";
+    //   return false;
+    // } else {
+    //   console.log("pallet");
+    //   $(currentSection.pallet).value = e;
+    //   return false;
+    // }
   }
 });
 
