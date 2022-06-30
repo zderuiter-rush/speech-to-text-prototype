@@ -348,7 +348,7 @@ root.addGroup(root, correctDims, function (e) {
   if (
     currentSection !== sections.dimensions ||
     !currentSection.redo ||
-    currentSection.type !== "product"
+    currentSection.type !== "box"
   ) {
     return false;
   }
