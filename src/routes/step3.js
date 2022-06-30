@@ -57,17 +57,15 @@ export default class Step3 extends Component {
       });
     });
 
-    $$(".box.dim").forEach(function (boxDim) {
+    $$(".box").forEach(function (boxDim) {
       boxDim.addEventListener("change", function () {
-        let dims = [
-          $(".box.dim.l").value,
-          $(".box.dim.d").value,
-          $(".box.dim.h").value,
-        ];
-        dims.sort((a, b) => b - a);
-        $(".box.dim.l").value = dims[0];
-        $(".box.dim.d").value = dims[1];
-        $(".box.dim.h").value = dims[2];
+        if (!boxDim.classList.contains("product")) {
+          let dims = [$(".box.l").value, $(".box.d").value, $(".box.h").value];
+          dims.sort((a, b) => b - a);
+          $(".box.l").value = dims[0];
+          $(".box.d").value = dims[1];
+          $(".box.h").value = dims[2];
+        }
       });
     });
 
@@ -125,21 +123,21 @@ export default class Step3 extends Component {
             </tr>
             <tr>
               <td>
-                <label className="box_label l">Longest Side: </label>
+                <label className="box_label l dim">Longest Side: </label>
                 <input type="text" className="box l" defaultValue="20" />
                 <label className="box_length label">in.</label>
               </td>
             </tr>
             <tr>
               <td>
-                <label className="box_label d">2nd Longest Side: </label>
+                <label className="box_label d dim">2nd Longest Side: </label>
                 <input type="text" className="box d" defaultValue="20" />
                 <label className="box_depth label">in.</label>
               </td>
             </tr>
             <tr>
               <td>
-                <label className="box_label h">Shortest Side: </label>
+                <label className="box_label h dim">Shortest Side: </label>
                 <input type="text" className="box h" defaultValue="20" />
                 <label className="box_height label">in.</label>
               </td>

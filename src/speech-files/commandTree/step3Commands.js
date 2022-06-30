@@ -191,7 +191,8 @@ export async function startInspection() {
         prompt +=
           currentSection.type === "box"
             ? `Dimensions: then say the dimensions.`
-            : `Length: then say the length. And Depth: then say the depth. And Height: then say the height`;
+            : `Length: then say the length. And Depth: then say the depth. ` +
+              `And Height: then say the height... Say "Next Section" when you are done.`;
         speech.addToQueue(prompt);
       }
       break;
@@ -308,6 +309,9 @@ root.addGroup(root, unverify, function (e) {
         $(".box_label.l").textContent = "Length: ";
         $(".box_label.d").textContent = "Depth: ";
         $(".box_label.h").textContent = "Height: ";
+        $(".box.l").classList.add("product");
+        $(".box.d").classList.add("product");
+        $(".box.h").classList.add("product");
         sections.dimensions.type = "product";
         $(currentSection.no).click();
         break;
