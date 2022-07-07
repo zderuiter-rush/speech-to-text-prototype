@@ -25,7 +25,7 @@ export default function HashTableNode() {
     }
   };
 
-  this.getCommand = function (key, txt) {
+  this.getCommand = function (key, txt = "") {
     let keys = key.split(" ");
     if (!keepCommand) {
       if (keys.length > 1) {
@@ -35,10 +35,12 @@ export default function HashTableNode() {
           this.content[keys[0]]["next"] !== undefined &&
           this.content[keys[0]]["next"].getContent()[keys[1]] !== undefined
         ) {
-          return this.content[keys[0]]["next"].getCommand(
+          let cmd = this.content[keys[0]]["next"].getCommand(
             keys.slice(1).join(" "),
             txt + keys[0] + " "
           );
+          command = cmd["cmd"];
+          return cmd;
         } else {
           startCommand = true;
         }
@@ -50,6 +52,7 @@ export default function HashTableNode() {
         ) {
           return null;
         }
+        command = this.content[keys[0]]["cmd"];
         commandText = txt + keys[0];
         return {
           cmd: this.content[keys[0]]["cmd"],
@@ -64,26 +67,29 @@ export default function HashTableNode() {
     };
   };
 
-  this.doCommand = function (cmd, key) {
-    command = cmd;
-    let keys = key.split(" ");
+  // this.doCommand = function (cmd, key) {
+  //   command = cmd;
+  //   let keys = key.split(" ");
+  //   console.log(keepCommand);
 
-    if (!keepCommand || key === "") {
-      if (keys.length > 1) {
-        command = this.getCommand(this.formatKey(keys.join(" ")));
-        if (command !== null) {
-          keepCommand = command(keys[0]);
-        }
-        this.doCommand(command, keys.slice(1).join(" "));
-      }
-      return;
-    }
+  //   if (!keepCommand || key === "") {
+  //     if (keys.length > 1) {
+  //       console.log(keys.join(" "));
+  //       command = this.getCommand(this.formatKey(keys.join(" ")));
+  //       console.log(command);
+  //       if (command !== null) {
+  //         keepCommand = command(keys[0]);
+  //       }
+  //       this.doCommand(command, keys.slice(1).join(" "));
+  //     }
+  //     return;
+  //   }
 
-    if (keepCommand) {
-      keepCommand = startCommand = command(keys[0]);
-    }
-    this.doCommand(command, keys.slice(1).join(" "));
-  };
+  //   if (keepCommand) {
+  //     keepCommand = startCommand = command(keys[0]);
+  //   }
+  //   this.doCommand(command, keys.slice(1).join(" "));
+  // };
 
   this.getContent = function () {
     return this.content;

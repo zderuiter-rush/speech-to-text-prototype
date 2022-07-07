@@ -1,14 +1,14 @@
 import { getCredentials } from "./key_util";
 import { ResultReason } from "microsoft-cognitiveservices-speech-sdk";
 import { startVerification } from "./commandTree/step2Commands";
-import { startInspection } from "./commandTree/step3Commands";
+import { startSection } from "./commandTree/step3Commands";
 
 const speechsdk = require("microsoft-cognitiveservices-speech-sdk");
 const { wordsToNumbers } = require("words-to-numbers");
 
 const $ = (s, o = document) => o.querySelector(s);
-// const baseURL = "http://localhost:3000/";
-const baseURL = "https://sheltered-plateau-09726.herokuapp.com/";
+const baseURL = "http://localhost:3000/";
+// const baseURL = "https://sheltered-plateau-09726.herokuapp.com/";
 
 // Speech to text setup
 var startSTT = false;
@@ -35,8 +35,7 @@ export const commandTree = {
       return;
     }
     commandTree.command = commandTree.root.getCommand(
-      commandTree.root.formatKey(key),
-      ""
+      commandTree.root.formatKey(key)
     );
 
     if (
@@ -52,24 +51,24 @@ export const commandTree = {
             1
         );
         keys = cmdContent.split(" ");
+
+        for (let i = 0; i < keys.length; i++) {
+          let num = wordsToNumbers(keys[i], { impliedHundreds: true });
+          if (/[0-9]*(.[0-9]*)?/.test(num)) {
+            keys[i] = num.toString();
+          }
+        }
       } else {
         keys = key.split(" ");
       }
 
-      for (let i = 0; i < keys.length; i++) {
-        let num = wordsToNumbers(keys[i], { impliedHundreds: true });
-        if (/[0-9]*(.[0-9]*)?/.test(num)) {
-          keys[i] = num.toString();
-        }
-      }
-
-      if (commandTree.command["cmd"] !== null) {
-        commandTree.root.setKeepCommand(commandTree.command["cmd"](keys[0]));
-      }
-      commandTree.root.doCommand(
-        commandTree.command["cmd"],
-        keys.slice(1).join(" ")
-      );
+      let keepCommand = false;
+      do {
+        keepCommand = commandTree.command["cmd"](keys[0]);
+        commandTree.root.setKeepCommand(keepCommand);
+        if (keepCommand) keys = keys.slice(1);
+      } while (keepCommand && keys.join(" ") !== "");
+      commandTree.handleRecognizedSpeech(keys.join(" "));
     }
   },
 };
@@ -125,6 +124,7 @@ export const speech = {
   stop: async () => {
     await speech.recognizer.stopContinuousRecognitionAsync();
     speech.recognizer.close();
+    speech.recognizer = null;
   },
   addToQueue: (text, rate = 1.5) => {
     speech.textQueue.push(text);
@@ -220,7 +220,7 @@ export async function startPage() {
         break;
       case "3":
         speech.addToQueue("Product Inspection Page.");
-        startInspection();
+        startSection();
         break;
       case "command-list":
         speech.addToQueue("Command List Page");
