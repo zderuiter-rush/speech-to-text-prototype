@@ -1,7 +1,7 @@
 import { Component } from "react";
 import "../styles/commandList.scss";
-import { timer } from "../speech-files/STT";
-import { commandTree } from "../speech-files/STT";
+import { timer, commandTree } from "../speech-files/STT";
+import { mode } from "../speech-files/commandTree/step3Commands";
 
 const $ = (s, o = document) => o.querySelector(s);
 const $$ = (s, o = document) => o.querySelectorAll(s);
@@ -21,6 +21,18 @@ export default class CommandList extends Component {
           timer(true);
         } else {
           timer(false);
+        }
+      });
+    });
+
+    $$(".mode").forEach(function (type) {
+      type.addEventListener("change", function () {
+        if ($(".mode.train").checked) {
+          mode("train");
+        } else if ($(".mode.expert").checked) {
+          mode("expert");
+        } else {
+          mode("free");
         }
       });
     });
@@ -48,6 +60,31 @@ export default class CommandList extends Component {
                     defaultChecked
                   />
                   <label>Off</label>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <table className="modeTable">
+            <tbody>
+              <tr>
+                <td>
+                  <h4>Set Mode</h4>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <input
+                    type="radio"
+                    className="mode train"
+                    name="sttMode"
+                    defaultChecked
+                  />
+                  <label>Training</label>
+                  <input type="radio" className="mode expert" name="sttMode" />
+                  <label>Expert</label>
+                  <input type="radio" className="mode free" name="sttMode" />
+                  <label>Free</label>
                 </td>
               </tr>
             </tbody>

@@ -69,6 +69,16 @@ export default class Step3 extends Component {
       });
     });
 
+    // navigator.mediaSession.setActionHandler("pause", (e) => {
+    //   console.log("pause");
+    // });
+
+    // navigator.mediaDevices.dispatchEvent("")
+    // navigator.mediaDevices.enumerateDevices().then((devices) => {
+    //   // Check the connected devices
+    //   console.log(devices);
+    // });
+
     startPage();
   }
 
@@ -145,7 +155,7 @@ export default class Step3 extends Component {
 
             <tr>
               <td>
-                <h2>What is the product condition?</h2>
+                <h2 className="cond prompt">What is the product condition?</h2>
               </td>
             </tr>
             <tr>
@@ -166,7 +176,7 @@ export default class Step3 extends Component {
 
             <tr className="damaged">
               <td>
-                <h2>Is the product missing parts?</h2>
+                <h2 className="miss prompt">Is the product missing parts?</h2>
               </td>
             </tr>
             <tr className="damaged">
@@ -182,7 +192,7 @@ export default class Step3 extends Component {
 
             <tr className="damaged">
               <td>
-                <h2>
+                <h2 className="whr_dmg">
                   Where is the damage? <i>Check all that apply</i>
                 </h2>
               </td>
@@ -376,7 +386,7 @@ export default class Step3 extends Component {
           <tbody>
             <tr>
               <td>
-                <h2>Location</h2>
+                <h2 className="l_prompt">Location</h2>
               </td>
             </tr>
             <tr>
