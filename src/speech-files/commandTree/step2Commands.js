@@ -72,14 +72,14 @@ export const root = new HashTableNode();
 export function startVerification() {
   switch (currentSection) {
     case null:
-      resetPhrases([
-        checkAll,
-        verify,
-        unverify,
-        correctDims,
-        addNotes,
-        endNotes,
-      ]);
+      // resetPhrases([
+      //   checkAll,
+      //   verify,
+      //   unverify,
+      //   correctDims,
+      //   addNotes,
+      //   endNotes,
+      // ]);
       currentSection = sections.category;
       break;
     case sections.category:
@@ -146,6 +146,7 @@ root.addGroup(root, unverify, function (e) {
     default:
       return;
   }
+  startVerification();
 });
 
 root.addGroup(root, correctDims, function (e) {
