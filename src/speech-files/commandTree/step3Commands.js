@@ -136,7 +136,7 @@ const sections = {
     prompt: ".add_dmg_img",
   },
   assemInstr: {
-    promt: ".are_inst_incl",
+    prompt: ".are_inst_incl",
     yes: ".yes_instr",
     no: ".no_instr",
   },
@@ -154,7 +154,7 @@ const sections = {
 
 const current = {
   section: null,
-  mode: "train",
+  mode: "free",
   prompt: "",
 };
 
@@ -181,10 +181,9 @@ function setPrompt(long, short) {
   }
 }
 
-function next() {
-  // if (current.mode === "free") {
-  //   current.section = undefined;
-  // } else {
+function next(bypass = false) {
+  if (current.mode === "free" && !bypass) current.section = undefined;
+
   switch (current.section) {
     case null:
       current.section = sections.ogpack;
@@ -242,10 +241,8 @@ function next() {
       current.section = sections.location;
       break;
     default:
-      current.section = undefined;
       break;
   }
-  // }
   startSection();
 }
 
@@ -284,7 +281,6 @@ export async function startSection() {
       }
       speech.addToQueue(current.prompt);
       $(current.section.prompt).scrollIntoView();
-      console.log(";aldkjf");
       break;
     case sections.condition:
       setPrompt(
@@ -377,7 +373,6 @@ root.addGroup(root, verify, function (e) {
         $(current.section.yes).click();
         break;
     }
-    if (current.mode === "free") return false;
     next();
   }
   return false;
@@ -417,7 +412,6 @@ root.addGroup(root, unverify, function (e) {
         $(current.section.no).click();
         break;
     }
-    if (current.mode === "free") return false;
     next();
   }
   return false;
@@ -440,9 +434,11 @@ root.addGroup(root, missMost, function (e) {
 });
 
 root.addGroup(root, correctDims, function (e) {
-  if (current.mode === "free") {
+  if (current.mode === "free" && current.section !== sections.dimensions) {
     current.section = sections.dimensions;
     startSection();
+    current.section.redo = true;
+    return false;
   }
   if (
     current.section !== sections.dimensions ||
@@ -531,11 +527,13 @@ root.addGroup(root, height, function (e) {
 });
 
 root.addGroup(root, weight, function (e) {
-  let number = /[0-9]+(\.[0-9]+)?/;
-  if (number.test(e)) {
-    let res = number.exec(e);
-    $(".box.w").value = res[0];
-    return false;
+  if (current.section === sections.dimensions) {
+    let number = /[0-9]+(\.[0-9]+)?/;
+    if (number.test(e)) {
+      let res = number.exec(e);
+      $(".box.w").value = res[0];
+      return false;
+    }
   }
   return true;
 });
@@ -553,28 +551,28 @@ root.addGroup(root, condition, function (e) {
     $(current.section.likeNew).click();
     $(".condChoice").value = "";
     current.section = sections.location;
-    startSection();
+    if (current.mode !== "free") startSection();
     return false;
   }
   if ($(".condChoice").value.toLowerCase().includes("new")) {
     $(current.section.new).click();
     $(".condChoice").value = "";
     current.section = sections.location;
-    startSection();
+    if (current.mode !== "free") startSection();
     return false;
   }
   if (/damage(d)?/.test($(".condChoice").value.toLowerCase())) {
     $(current.section.damaged).click();
     $(".condChoice").value = "";
     current.section = sections.missParts;
-    startSection();
+    if (current.mode !== "free") startSection();
     return false;
   }
   if ($(".condChoice").value.toLowerCase().includes("trash")) {
     $(current.section.trash).click();
     $(".condChoice").value = "";
     current.section = sections.dmgImg;
-    startSection();
+    if (current.mode !== "free") startSection();
     return false;
   }
   return true;
@@ -585,7 +583,7 @@ root.addGroup(root, dmgTop, function (e) {
     if (!$(current.section.top.checkbox).checked) {
       $(current.section.top.checkbox).click();
       current.section = current.section.top;
-      next();
+      next(true);
     } else {
       current.prompt =
         current.mode === "train"
@@ -601,7 +599,7 @@ root.addGroup(root, dmgBot, function (e) {
     if (!$(current.section.bottom.checkbox).checked) {
       $(current.section.bottom.checkbox).click();
       current.section = current.section.bottom;
-      next();
+      next(true);
     } else {
       current.prompt =
         current.mode === "train"
@@ -617,7 +615,7 @@ root.addGroup(root, dmgInt, function (e) {
     if (!$(current.section.interior.checkbox).checked) {
       $(current.section.interior.checkbox).click();
       current.section = current.section.interior;
-      next();
+      next(true);
     } else {
       current.prompt =
         current.mode === "train"
@@ -632,14 +630,14 @@ root.addGroup(root, dmgInt, function (e) {
 root.addGroup(root, visible, function (e) {
   if (current.section.clearlyVis !== undefined) {
     $(current.section.clearlyVis).click();
-    next();
+    next(true);
   }
   return false;
 });
 root.addGroup(root, hidden, function (e) {
   if (current.section.hidden !== undefined) {
     $(current.section.hidden).click();
-    next();
+    next(true);
   }
   return false;
 });
@@ -689,7 +687,6 @@ root.addGroup(root, addNotes, function (e) {
     });
 
     if (!continueDamage) next();
-
     return continueDamage;
   }
 });
@@ -706,7 +703,7 @@ root.addGroup(root, location, function (e) {
 });
 
 root.addGroup(root, nextSection, function (e) {
-  next();
+  next(true);
   return false;
 });
 function chooseSectionWhileFree(sect, func = null) {
