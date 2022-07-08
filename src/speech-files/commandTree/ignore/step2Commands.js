@@ -1,5 +1,5 @@
 import HashTableNode from "./commandTree";
-import { speech, controlVoice, resetPhrases } from "../STT";
+import { speech, controlVoice } from "../STT";
 
 const $ = (s, o = document) => o.querySelector(s);
 const $$ = (s, o = document) => o.querySelectorAll(s);

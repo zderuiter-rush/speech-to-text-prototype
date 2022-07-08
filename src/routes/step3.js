@@ -1,16 +1,33 @@
 import "../styles/step3.scss";
 import { Component } from "react";
 import { Link } from "react-router-dom";
-import { commandTree, startPage } from "../speech-files/STT";
+import { commandTree, startPage } from "../speech-files/Voice";
 import { root } from "../speech-files/commandTree/step3Commands";
 
+// simple query selectors because jQuery is weird
 const $ = (s, o = document) => o.querySelector(s);
 const $$ = (s, o = document) => o.querySelectorAll(s);
 
+/**
+ * Class that replicates step 3, 4, and 5 of the inspection process into one page.
+ * When this page is loaded:
+ *    - it sets the root of the commandTree
+ *      - this sets what all the commands will be for this page
+ *    - event listeners are added
+ *    - startPage is called
+ *      - if Voice has been started, this will tell Voice to say what the current
+ *        page title is and start the inspection process in whatever mode was set
+ *        in commandList page (training mode as default)
+ */
 export default class Step3 extends Component {
+  // function called on this page being loaded in
   async componentDidMount() {
+    // set the root which sets all the commands for the page, without this no
+    // commands will be set/recognized/executed
     commandTree.root = root;
 
+    // add event listener to the condition radio button choices
+    // if the damaged button is selected, show all the damage stuff
     $$(".cond").forEach(function (condChoice) {
       condChoice.addEventListener("click", function () {
         if (condChoice.classList.contains("dmg")) {
@@ -25,6 +42,7 @@ export default class Step3 extends Component {
       });
     });
 
+    // if the trash choice is selected, show just the "add image" box
     $(".cond.trash").addEventListener("change", function () {
       if ($(".cond.trash").checked) {
         $(".add_dmg_img").style.display = "block";
@@ -33,6 +51,9 @@ export default class Step3 extends Component {
       }
     });
 
+    // when choosing where the damage is, display the visibility and
+    // severity questions for whatever given choice is selected, and
+    // stop displaying them if the choice is deselected
     $$("._dmg").forEach(function (condChoice) {
       condChoice.addEventListener("change", function () {
         if (condChoice.classList.contains("top")) {
@@ -57,6 +78,7 @@ export default class Step3 extends Component {
       });
     });
 
+    // auto reorder the dimensions from largest to smallest if the dimensions are for a box
     $$(".box").forEach(function (boxDim) {
       boxDim.addEventListener("change", function () {
         if (!boxDim.classList.contains("product")) {
@@ -69,19 +91,12 @@ export default class Step3 extends Component {
       });
     });
 
-    // navigator.mediaSession.setActionHandler("pause", (e) => {
-    //   console.log("pause");
-    // });
-
-    // navigator.mediaDevices.dispatchEvent("")
-    // navigator.mediaDevices.enumerateDevices().then((devices) => {
-    //   // Check the connected devices
-    //   console.log(devices);
-    // });
-
+    // start the page: if Voice is on, "Product Inspection Page" is said and then
+    // the inspection process is started with Voice
     startPage();
   }
 
+  // HTML
   render() {
     return (
       <div className="step3_cont">

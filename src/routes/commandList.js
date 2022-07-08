@@ -1,20 +1,34 @@
 import { Component } from "react";
 import "../styles/commandList.scss";
-import { timer, commandTree } from "../speech-files/STT";
+import { timer, commandTree } from "../speech-files/Voice";
 import { mode } from "../speech-files/commandTree/step3Commands";
 
+// simple query selectors because jQuery is weird
 const $ = (s, o = document) => o.querySelector(s);
 const $$ = (s, o = document) => o.querySelectorAll(s);
 
+/**
+ * Class for the command list page. The event listeners are added
+ * when the command list page loads.
+ */
 export default class CommandList extends Component {
+  /**
+   * This gets called whenever this page is loaded
+   */
   componentDidMount() {
+    // set the command tree root to null so no commands are recognized
+    // while on this page. Simple stupid way to make sure there are no errors
     commandTree.root = null;
+
+    // this makes it so that each header for each page can be clicked to expand the commands
     $$(".container").forEach(function (container) {
       container.addEventListener("click", function () {
         $(".commands", container).classList.toggle("expand");
       });
     });
 
+    // when the timer radio buttons are clicked, they will turn on/off the timer
+    // in Voice.js
     $$(".timer").forEach(function (opt) {
       opt.addEventListener("change", function () {
         if ($(".timer.on").checked) {
@@ -25,6 +39,8 @@ export default class CommandList extends Component {
       });
     });
 
+    // when the mode radio buttons are clicked, they will change the mode to
+    // whatever was clicked in step3Commands.js
     $$(".mode").forEach(function (type) {
       type.addEventListener("change", function () {
         if ($(".mode.train").checked) {
@@ -38,6 +54,7 @@ export default class CommandList extends Component {
     });
   }
 
+  // HTML
   render() {
     return (
       <div className="commandList_cont">

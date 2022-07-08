@@ -3,6 +3,11 @@ import { Link } from "react-router-dom";
 import { Component } from "react";
 import { ReactComponent as Logo } from "../icons/RushMarketLogo.svg";
 
+/**
+ * Simple navbar
+ *    click rush logo, go home
+ *    click command list button, go to command list page
+ */
 export default class Navbar extends Component {
   render() {
     return (
