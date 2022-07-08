@@ -1,5 +1,5 @@
-import HashTableNode from "./commandTree";
-import { speech, controlVoice, sttFromMic } from "../STT";
+import CommandTree from "./commandTree";
+import { speech, controlVoice, sttFromMic } from "../Voice";
 
 const $ = (s, o = document) => o.querySelector(s);
 
@@ -169,7 +169,7 @@ export function mode(mode) {
  * return "false" to make the command function stop repeating and wait for the next
  * command. (It repeats so users can pause after saying a command)
  */
-export const root = new HashTableNode();
+export const root = new CommandTree();
 
 function setPrompt(long, short) {
   if (current.mode !== "free") {

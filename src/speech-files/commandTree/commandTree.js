@@ -1,4 +1,7 @@
-export default function HashTableNode() {
+/**
+ *
+ */
+export default function CommandTree() {
   var command = null;
   var commandText = null;
   var keepCommand = false;
@@ -16,7 +19,7 @@ export default function HashTableNode() {
     if (keys.length > 1) {
       if (!this.content.hasOwnProperty(keys[0])) {
         this.content[keys[0]] = {};
-        this.content[keys[0]]["next"] = new HashTableNode();
+        this.content[keys[0]]["next"] = new CommandTree();
       }
       this.content[keys[0]]["next"].add(keys.slice(1).join(" "), funcValue);
     } else {
@@ -66,30 +69,6 @@ export default function HashTableNode() {
       txt: "",
     };
   };
-
-  // this.doCommand = function (cmd, key) {
-  //   command = cmd;
-  //   let keys = key.split(" ");
-  //   console.log(keepCommand);
-
-  //   if (!keepCommand || key === "") {
-  //     if (keys.length > 1) {
-  //       console.log(keys.join(" "));
-  //       command = this.getCommand(this.formatKey(keys.join(" ")));
-  //       console.log(command);
-  //       if (command !== null) {
-  //         keepCommand = command(keys[0]);
-  //       }
-  //       this.doCommand(command, keys.slice(1).join(" "));
-  //     }
-  //     return;
-  //   }
-
-  //   if (keepCommand) {
-  //     keepCommand = startCommand = command(keys[0]);
-  //   }
-  //   this.doCommand(command, keys.slice(1).join(" "));
-  // };
 
   this.getContent = function () {
     return this.content;
