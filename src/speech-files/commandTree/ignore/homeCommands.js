@@ -1,5 +1,5 @@
-import HashTableNode from "./commandTree";
-import { controlVoice } from "../STT";
+import HashTableNode from "../commandTree";
+import { controlVoice } from "../../STT";
 
 const $ = (s, o = document) => o.querySelector(s);
 

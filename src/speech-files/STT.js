@@ -1,6 +1,6 @@
 import { getCredentials } from "./key_util";
 import { ResultReason } from "microsoft-cognitiveservices-speech-sdk";
-import { startVerification } from "./commandTree/step2Commands";
+// import { startVerification } from "./commandTree/step2Commands";
 import { startSection } from "./commandTree/step3Commands";
 
 const speechsdk = require("microsoft-cognitiveservices-speech-sdk");
@@ -211,22 +211,23 @@ export async function startPage() {
   if (startSTT) {
     const route = window.location.href.replace(baseURL, "");
     switch (route) {
-      case "1":
-        speech.addToQueue("Recieve Products Page.");
-        break;
-      case "2":
-        speech.addToQueue("Verification Page.");
-        startVerification();
-        break;
-      case "3":
-        speech.addToQueue("Product Inspection Page.");
-        startSection();
-        break;
+      // case "1":
+      //   speech.addToQueue("Recieve Products Page.");
+      //   break;
+      // case "2":
+      //   speech.addToQueue("Verification Page.");
+      //   startVerification();
+      //   break;
+      // case "3":
+      //   speech.addToQueue("Product Inspection Page.");
+      //   startSection();
+      //   break;
       case "command-list":
         speech.addToQueue("Command List Page");
         break;
       default:
-        speech.addToQueue("Home Page.");
+        speech.addToQueue("Product Inspection Page.");
+        startSection();
         break;
     }
   }
