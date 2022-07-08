@@ -12,7 +12,7 @@ export default class Navbar extends Component {
         </Link>
         <nav className="nav">
           <ul>
-            <li>
+            {/* <li>
               <Link className="link" to="/1">
                 Step 1
               </Link>
@@ -26,7 +26,7 @@ export default class Navbar extends Component {
               <Link className="link" to="/3">
                 Step 3
               </Link>
-            </li>
+            </li> */}
             <li>
               <Link className="link" to="/command-list">
                 Command List

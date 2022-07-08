@@ -154,7 +154,7 @@ const sections = {
 
 const current = {
   section: null,
-  mode: "free",
+  mode: "train",
   prompt: "",
 };
 
