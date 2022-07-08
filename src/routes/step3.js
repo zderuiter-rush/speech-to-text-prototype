@@ -2,7 +2,7 @@ import "../styles/step3.scss";
 import { Component } from "react";
 import { Link } from "react-router-dom";
 import { commandTree, startPage } from "../speech-files/Voice";
-import { root } from "../speech-files/commandTree/step3Commands";
+import { root } from "../speech-files/step3Commands";
 
 // simple query selectors because jQuery is weird
 const $ = (s, o = document) => o.querySelector(s);

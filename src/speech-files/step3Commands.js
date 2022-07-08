@@ -1,5 +1,5 @@
 import CommandTree from "./commandTree";
-import { speech, controlVoice, sttFromMic } from "../Voice";
+import { speech, controlVoice, sttFromMic } from "./Voice";
 
 const $ = (s, o = document) => o.querySelector(s);
 

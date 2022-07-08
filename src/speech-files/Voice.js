@@ -1,7 +1,7 @@
 import { getCredentials } from "./key_util";
 import { ResultReason } from "microsoft-cognitiveservices-speech-sdk";
 // import { startVerification } from "./commandTree/step2Commands";
-import { startSection } from "./commandTree/step3Commands";
+import { startSection } from "./step3Commands";
 
 const speechsdk = require("microsoft-cognitiveservices-speech-sdk");
 const { wordsToNumbers } = require("words-to-numbers");
