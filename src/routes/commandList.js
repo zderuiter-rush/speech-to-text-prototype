@@ -1,6 +1,6 @@
 import { Component } from "react";
 import "../styles/commandList.scss";
-import { timer, commandTree } from "../speech-files/Voice";
+import { timer } from "../speech-files/Voice";
 import { mode } from "../speech-files/step3Commands";
 
 // simple query selectors because jQuery is weird
@@ -16,10 +16,6 @@ export default class CommandList extends Component {
    * This gets called whenever this page is loaded
    */
   componentDidMount() {
-    // set the command tree root to null so no commands are recognized
-    // while on this page. Simple stupid way to make sure there are no errors
-    commandTree.root = null;
-
     // this makes it so that each header for each page can be clicked to expand the commands
     $$(".container").forEach(function (container) {
       container.addEventListener("click", function () {

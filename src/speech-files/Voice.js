@@ -1,77 +1,31 @@
 import { getCredentials } from "./key_util";
 import { ResultReason } from "microsoft-cognitiveservices-speech-sdk";
+import { commandTree } from "./commandTree";
 // import { startVerification } from "./commandTree/step2Commands";
 import { startSection } from "./step3Commands";
 
+// speech sdk and library to turn words to numbers
 const speechsdk = require("microsoft-cognitiveservices-speech-sdk");
-const { wordsToNumbers } = require("words-to-numbers");
 
+// query select because jQuery is weird
 const $ = (s, o = document) => o.querySelector(s);
-const baseURL = "http://localhost:3000/";
+
+// IGNORE THESE, THEY WERE USED WHEN THERE WERE MULTIPLE PAGES THAT
+// NEEDED VOICE
+// const baseURL = "http://localhost:3000/";
 // const baseURL = "https://sheltered-plateau-09726.herokuapp.com/";
 
-// Speech to text setup
-var startSTT = false;
+// variable used to toggle Voice on/off
+var startVoice = false;
 
 // timer for speech to text to make sure it doesn't keep recording indefinitely
-// change timerOn to true to turn on timer
 var sttTimer = null;
+
+// timer interval (currently 5 seconds for testing/show casing, will be more for actual use)
 var sttInterval = 5000;
+
+// used right now for development, won't be needed in actual use since timer will always be used
 var timerOn = false;
-
-export const commandTree = {
-  command: null,
-  commandText: null,
-  root: null,
-  reset: () => {
-    commandTree.command = null;
-    commandTree.commandText = null;
-    if (commandTree.root !== null) {
-      commandTree.root.setKeepCommand(false);
-    }
-  },
-  handleRecognizedSpeech: (key) => {
-    if (commandTree.root === null || key === "") {
-      return;
-    }
-    commandTree.command = commandTree.root.getCommand(
-      commandTree.root.formatKey(key)
-    );
-
-    if (
-      (!speech.paused ||
-        (speech.paused && commandTree.command["txt"] === "control voice")) &&
-      commandTree.command !== null
-    ) {
-      let keys = null;
-      if (commandTree.command["txt"] !== "") {
-        let cmdContent = key.substring(
-          key.toLowerCase().indexOf(commandTree.command["txt"]) +
-            commandTree.command["txt"].length +
-            1
-        );
-        keys = cmdContent.split(" ");
-
-        for (let i = 0; i < keys.length; i++) {
-          let num = wordsToNumbers(keys[i], { impliedHundreds: true });
-          if (/[0-9]*(.[0-9]*)?/.test(num)) {
-            keys[i] = num.toString();
-          }
-        }
-      } else {
-        keys = key.split(" ");
-      }
-
-      let keepCommand = false;
-      do {
-        keepCommand = commandTree.command["cmd"](keys[0]);
-        commandTree.root.setKeepCommand(keepCommand);
-        if (keepCommand) keys = keys.slice(1);
-      } while (keepCommand && keys.join(" ") !== "");
-      commandTree.handleRecognizedSpeech(keys.join(" "));
-    }
-  },
-};
 
 export const speech = {
   speechConfig: null,
@@ -104,14 +58,14 @@ export const speech = {
       $(".speechtext").innerHTML = "Please speak louder or more clearly...";
     } else {
       $(".speechtext").innerHTML = e.result.text;
-      if (timerOn && !speech.paused && startSTT) {
+      if (timerOn && !speech.paused && startVoice) {
         sttTimer = setTimeout(voiceTimeout, sttInterval);
       }
-      commandTree.handleRecognizedSpeech(e.result.text);
+      commandTree.handleRecognizedSpeech(e.result.text, speech.paused);
     }
   },
   recognizing: (s, e) => {
-    if (timerOn && !speech.paused && startSTT) clearTimeout(sttTimer);
+    if (timerOn && !speech.paused && startVoice) clearTimeout(sttTimer);
     $(".speechtext").innerHTML = e.result.text;
   },
   canceled: (s, e) => {
@@ -185,12 +139,13 @@ export const speech = {
 function voiceTimeout() {
   speech.addToQueue("Are you still there?");
   clearTimeout(sttTimer);
-  sttTimer = setTimeout(sttFromMic, 15000);
+  sttTimer = setTimeout(toggleVoice, 15000);
 }
 
-export async function sttFromMic() {
-  startSTT = !startSTT;
-  if (!startSTT) {
+export async function toggleVoice(stop = false) {
+  if (!startVoice && stop) return;
+  startVoice = !startVoice;
+  if (!startVoice) {
     speech.addToQueue("Voice ended.");
     commandTree.reset();
     await speech.stop();
@@ -208,28 +163,31 @@ export async function sttFromMic() {
 }
 
 export async function startPage() {
-  if (startSTT) {
-    const route = window.location.href.replace(baseURL, "");
-    switch (route) {
-      // case "1":
-      //   speech.addToQueue("Recieve Products Page.");
-      //   break;
-      // case "2":
-      //   speech.addToQueue("Verification Page.");
-      //   startVerification();
-      //   break;
-      // case "3":
-      //   speech.addToQueue("Product Inspection Page.");
-      //   startSection();
-      //   break;
-      case "command-list":
-        speech.addToQueue("Command List Page");
-        break;
-      default:
-        speech.addToQueue("Product Inspection Page.");
-        startSection();
-        break;
-    }
+  if (startVoice) {
+    speech.addToQueue("Product Inspection Page.");
+    startSection();
+
+    // const route = window.location.href.replace(baseURL, "");
+    // switch (route) {
+    //   // case "1":
+    //   //   speech.addToQueue("Recieve Products Page.");
+    //   //   break;
+    //   // case "2":
+    //   //   speech.addToQueue("Verification Page.");
+    //   //   startVerification();
+    //   //   break;
+    //   // case "3":
+    //   //   speech.addToQueue("Product Inspection Page.");
+    //   //   startSection();
+    //   //   break;
+    //   case "command-list":
+    //     speech.addToQueue("Command List Page");
+    //     break;
+    //   default:
+    //     speech.addToQueue("Product Inspection Page.");
+    //     startSection();
+    //     break;
+    // }
   }
 }
 
@@ -253,7 +211,7 @@ export function controlVoice(cmd) {
     return false;
   }
   if (cmd.toLowerCase().includes("stop")) {
-    sttFromMic();
+    toggleVoice();
     return false;
   }
   return true;

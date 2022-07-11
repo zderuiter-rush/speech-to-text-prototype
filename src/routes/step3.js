@@ -1,7 +1,8 @@
 import "../styles/step3.scss";
 import { Component } from "react";
 import { Link } from "react-router-dom";
-import { commandTree, startPage } from "../speech-files/Voice";
+import { startPage, toggleVoice } from "../speech-files/Voice";
+import { commandTree } from "../speech-files/commandTree";
 import { root } from "../speech-files/step3Commands";
 
 // simple query selectors because jQuery is weird
@@ -94,6 +95,13 @@ export default class Step3 extends Component {
     // start the page: if Voice is on, "Product Inspection Page" is said and then
     // the inspection process is started with Voice
     startPage();
+  }
+
+  /**
+   * When you leave this page, Voice will stop
+   */
+  componentWillUnmount() {
+    toggleVoice(true);
   }
 
   // HTML

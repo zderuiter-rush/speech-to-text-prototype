@@ -1,5 +1,5 @@
 import CommandTree from "./commandTree";
-import { speech, controlVoice, sttFromMic } from "./Voice";
+import { speech, controlVoice, toggleVoice } from "./Voice";
 
 const $ = (s, o = document) => o.querySelector(s);
 
@@ -331,7 +331,7 @@ export async function startSection() {
         "Please use your computer to add a picture of the damage",
         "Add Picture"
       );
-      sttFromMic();
+      toggleVoice();
       next();
       break;
     case sections.assemInstr:
@@ -698,7 +698,7 @@ root.addGroup(root, location, function (e) {
     $(current.section.area).value = "201";
     $(current.section.zone).value = "C";
     $(current.section.loc).value = "0003";
-    if (current.mode !== "free") sttFromMic();
+    if (current.mode !== "free") toggleVoice();
   }
 });
 
