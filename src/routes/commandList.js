@@ -1,7 +1,7 @@
 import { Component } from "react";
 import "../styles/commandList.scss";
 import { timer } from "../speech-files/Voice";
-import { mode } from "../speech-files/step3Commands";
+import { mode } from "../speech-files/inspection/inspectionProcess";
 
 // simple query selectors because jQuery is weird
 const $ = (s, o = document) => o.querySelector(s);

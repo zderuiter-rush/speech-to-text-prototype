@@ -1,9 +1,8 @@
 import "../styles/step3.scss";
 import { Component } from "react";
-import { Link } from "react-router-dom";
 import { startPage, toggleVoice } from "../speech-files/Voice";
 import { commandTree } from "../speech-files/commandTree";
-import { root } from "../speech-files/step3Commands";
+import { root } from "../speech-files/inspection/inspectionProcess";
 
 // simple query selectors because jQuery is weird
 const $ = (s, o = document) => o.querySelector(s);
@@ -90,6 +89,23 @@ export default class Step3 extends Component {
           $(".box.h").value = dims[2];
         }
       });
+    });
+
+    $(".no_pack").addEventListener("click", function () {
+      $(".box.w").value = "";
+      $(".box.l").value = "";
+      $(".box.d").value = "";
+      $(".box.h").value = "";
+    });
+
+    $(".no_reuse").addEventListener("click", function () {
+      $(".isdims").innerHTML = "Product Dimensions and Weights";
+      $(".box_label.l").textContent = "Length: ";
+      $(".box_label.d").textContent = "Depth: ";
+      $(".box_label.h").textContent = "Height: ";
+      $(".box.l").classList.add("product");
+      $(".box.d").classList.add("product");
+      $(".box.h").classList.add("product");
     });
 
     // start the page: if Voice is on, "Product Inspection Page" is said and then
@@ -453,10 +469,6 @@ export default class Step3 extends Component {
             </tr>
           </tbody>
         </table>
-        <Link className="prevpage" to="/2">
-          Prev Page
-        </Link>
-        <button className="pseudo_save">Pseudo Save</button>
       </div>
     );
   }
